@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="EconoLens Uzbekistan: personal inflation and purchasing power calculator based on official CPI data.">
+<style>:root{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>EconoLens Uzbekistan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: one app column (max 1080px): header, tab rail, one working panel at a time; every figure in a mono face */
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --ink:#15213a; --muted:#5a667e; --line:#d7dee9;
+  --accent:#1f4f96; --accent-soft:#e3ebf7; --saffron:#b06a08; --saffron-soft:#fbf0de;
+  --good:#1b7a4d; --bad:#b3372e;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1420; --surface:#161f31; --ink:#e6ebf4; --muted:#9aa6bc; --line:#29354d;
+    --accent:#86acea; --accent-soft:#1c2a46; --saffron:#e6a64c; --saffron-soft:#2e2414;
+    --good:#5fc28f; --bad:#f07e74; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1420; --surface:#161f31; --ink:#e6ebf4; --muted:#9aa6bc; --line:#29354d;
+  --accent:#86acea; --accent-soft:#1c2a46; --saffron:#e6a64c; --saffron-soft:#2e2414;
+  --good:#5fc28f; --bad:#f07e74; color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.6rem;letter-spacing:-.01em}
+h1 span{color:var(--accent)}
+h2{font-family:var(--f-display);font-weight:500;font-size:1.1rem}
+h3{font-size:1rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+header .sub{color:var(--muted);margin-top:4px}
+.hright{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.chip.demo{background:var(--saffron-soft);border-color:transparent;color:var(--saffron);font-weight:500}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;color:var(--muted);font:500 .8rem var(--f-body);padding:5px 10px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+nav.tabs button{flex:none;border:0;background:none;font:500 .95rem var(--f-body);color:var(--muted);padding:10px 14px;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:hover{color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.kpi .lab{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500}
+.kpi .val{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:1.65rem;font-weight:500;line-height:1.2}
+.kpi .note{font-size:.82rem;color:var(--muted)}
+.kpi.you .val{color:var(--accent)}
+.kpi.avg .val{color:var(--saffron)}
+.up{color:var(--bad)} .down{color:var(--good)}
+/* basket */
+.brow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) 76px;gap:6px 14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.brow:last-child{border-bottom:0}
+.brow .nm{font-weight:500}
+.brow .nm small{display:block;color:var(--muted);font-weight:400;font-size:.78rem}
+.brow input[type=range]{width:100%;accent-color:var(--accent)}
+.numin{display:flex;align-items:center;gap:4px}
+.numin input{width:52px;text-align:right}
+input[type=number],input[type=text]{font:500 .95rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+@media (max-width:560px){.brow{grid-template-columns:minmax(0,1fr) 76px}.brow input[type=range]{grid-column:1/-1;grid-row:2}}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:500 .88rem var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.primary:hover{color:var(--surface);opacity:.9}
+.sumline{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.status{font-size:.85rem;font-weight:500;padding:3px 10px;border-radius:999px}
+.status.ok{background:var(--accent-soft);color:var(--good)}
+.status.bad{background:var(--saffron-soft);color:var(--saffron)}
+.stack{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--line)}
+.stack i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend b{width:10px;height:10px;border-radius:2px;display:inline-block}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) 72px;gap:10px;align-items:center;font-size:.88rem}
+.bar .track{position:relative;height:12px;background:var(--bg);border-radius:3px}
+.bar .track i{position:absolute;top:0;bottom:0;border-radius:3px;background:var(--accent)}
+.bar .track i.neg{background:var(--good)}
+.bar .track .zero{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.bar .v{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+@media (max-width:560px){.bar{grid-template-columns:minmax(0,1fr) 72px}.bar .track{grid-column:1/-1;grid-row:2}}
+.chartbox{position:relative;height:300px;width:100%}
+.explain{background:var(--accent-soft);border:0}
+.explain .eh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.explain .eh h3{font-family:var(--f-display);font-weight:500;font-size:.95rem;color:var(--accent)}
+.explain p.txt{font-size:1rem;max-width:68ch}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:500;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+tr.best td{color:var(--accent);font-weight:600}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:500;font-size:.9rem}
+.field .row{display:flex;align-items:center;gap:8px}
+.field input{width:100%;max-width:240px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:16px}
+.compare{display:flex;flex-direction:column;gap:10px}
+.cmp{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,2fr) auto;gap:10px;align-items:center;font-size:.88rem}
+.cmp .track{height:18px;background:var(--bg);border-radius:4px;position:relative}
+.cmp .track i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.cmp .v{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+@media (max-width:560px){.cmp{grid-template-columns:minmax(0,1fr) auto}.cmp .track{grid-column:1/-1;grid-row:2}}
+.callout{border-left:3px solid var(--saffron);padding:4px 0 4px 12px;font-size:.9rem}
+.formula{font-family:var(--f-mono);background:var(--bg);border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:nowrap;font-size:.92rem}
+pre{font-family:var(--f-mono);font-size:.8rem;background:var(--bg);border-radius:8px;padding:12px;overflow-x:auto;margin:0}
+ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.err{color:var(--bad);font-size:.88rem}
+.okmsg{color:var(--good);font-size:.88rem}
+a{color:var(--accent)}
+.privacy{display:flex;gap:8px;align-items:flex-start;font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Econo<span>Lens</span> Uzbekistan</h1>
+      <p class="sub">Личная инфляция и покупательная способность</p>
+    </div>
+    <div class="hright">
+      <span class="chip" id="srcChip">Агентство статистики</span>
+      <span class="chip mono" id="lastChip">—</span>
+      <div class="seg" role="group" aria-label="Язык объяснений">
+        <button id="lang-ru" data-lang="ru" aria-pressed="true">RU</button>
+        <button id="lang-uz" data-lang="uz" aria-pressed="false">UZ</button>
+        <button id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="t-basket" data-tab="basket" aria-selected="true">Корзина</button>
+    <button role="tab" id="t-infl" data-tab="infl" aria-selected="false">Моя инфляция</button>
+    <button role="tab" id="t-salary" data-tab="salary" aria-selected="false">Зарплата</button>
+    <button role="tab" id="t-fc" data-tab="fc" aria-selected="false">Прогноз</button>
+    <button role="tab" id="t-sc" data-tab="sc" aria-selected="false">Сценарии</button>
+    <button role="tab" id="t-meth" data-tab="meth" aria-selected="false">Методология и данные</button>
+  </nav>
+
+  <!-- BASKET -->
+  <section class="panel" id="p-basket">
+    <div class="card">
+      <div class="sumline">
+        <div>
+          <h2>Ваша корзина расходов</h2>
+          <p class="muted small">Укажите, какую долю месячных расходов занимает каждая категория. Точные суммы не нужны.</p>
+        </div>
+        <span class="status ok" id="sumStatus">Сумма: 100%</span>
+      </div>
+      <div class="btns">
+        <span class="muted small" style="align-self:center">Шаблоны:</span>
+        <button class="btn" data-preset="official">Официальная корзина ИПЦ</button>
+        <button class="btn" data-preset="student">Студент</button>
+        <button class="btn" data-preset="family">Семья с детьми</button>
+        <button class="btn" data-preset="pensioner">Пенсионер</button>
+        <button class="btn primary" id="normBtn">Привести к 100%</button>
+      </div>
+      <div id="basketRows"></div>
+    </div>
+    <div class="card">
+      <h3>Ваша корзина и официальная корзина</h3>
+      <div class="flex" style="display:flex;flex-direction:column;gap:8px">
+        <div class="small muted">Вы</div><div class="stack" id="stackYou"></div>
+        <div class="small muted">Официальная корзина</div><div class="stack" id="stackAvg"></div>
+      </div>
+      <div class="legend" id="stackLegend"></div>
+    </div>
+  </section>
+
+  <!-- INFLATION -->
+  <section class="panel" id="p-infl" hidden>
+    <div class="kpis">
+      <div class="kpi you"><span class="lab">Ваша инфляция, 12 мес</span><span class="val" id="k-you">—</span><span class="note" id="k-you-n"></span></div>
+      <div class="kpi avg"><span class="lab">Официальная корзина, 12 мес</span><span class="val" id="k-avg">—</span><span class="note">веса официальной корзины</span></div>
+      <div class="kpi"><span class="lab">Разница</span><span class="val" id="k-gap">—</span><span class="note">процентные пункты</span></div>
+    </div>
+    <div class="card explain" id="ex-infl"></div>
+    <div class="card">
+      <h2>Инфляция за 12 месяцев: вы и официальная корзина</h2>
+      <div class="chartbox"><canvas id="chYoy"></canvas></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Что добавило к вашей инфляции</h3>
+        <p class="muted small">Вклад категории = доля × рост цен в категории. Сумма вкладов равна вашей инфляции.</p>
+        <div class="bars" id="contribBars"></div>
+      </div>
+      <div class="card">
+        <h3>Откуда разница с официальной корзиной</h3>
+        <p class="muted small">(ваша доля − официальная доля) × (рост цен категории − официальная инфляция). Сумма равна разнице.</p>
+        <div class="bars" id="gapBars"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SALARY -->
+  <section class="panel" id="p-salary" hidden>
+    <div class="card">
+      <h2>Зарплата и покупательная способность</h2>
+      <div class="fields">
+        <div class="field"><label for="salNow">Зарплата сейчас, сум в месяц</label><input type="text" inputmode="numeric" id="salNow" value="6 000 000"></div>
+        <div class="field"><label for="salPrev">Зарплата 12 месяцев назад, сум</label><input type="text" inputmode="numeric" id="salPrev" value="5 200 000"></div>
+        <div class="field"><label for="spend">Расходы в месяц, сум (необязательно)</label><input type="text" inputmode="numeric" id="spend" value="4 500 000"></div>
+      </div>
+      <p class="privacy">Цифры уже заполнены для примера, впишите свои. Они остаются только в этой вкладке браузера: никуда не отправляются и не сохраняются.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="lab">Рост зарплаты</span><span class="val" id="s-nom">—</span><span class="note">номинальный, за 12 мес</span></div>
+      <div class="kpi you"><span class="lab">Реальный рост</span><span class="val" id="s-real">—</span><span class="note">с учётом вашей инфляции</span></div>
+      <div class="kpi avg"><span class="lab">Реальный рост по официальной</span><span class="val" id="s-real-avg">—</span><span class="note">с учётом официальной инфляции</span></div>
+    </div>
+    <div class="card explain" id="ex-sal"></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Сколько нужно, чтобы покупать столько же</h3>
+        <div class="compare" id="salCompare"></div>
+        <p class="small muted" id="salNeedNote"></p>
+      </div>
+      <div class="card">
+        <h3>Ваши расходы и ближайшие месяцы</h3>
+        <ul class="plain" id="salList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORECAST -->
+  <section class="panel" id="p-fc" hidden>
+    <div class="kpis">
+      <div class="kpi you"><span class="lab">Прогноз на 3 месяца</span><span class="val" id="f-3m">—</span><span class="note" id="f-3m-n"></span></div>
+      <div class="kpi"><span class="lab">Лучший метод</span><span class="val" id="f-best" style="font-size:1.15rem">—</span><span class="note" id="f-best-n"></span></div>
+      <div class="kpi"><span class="lab">Ошибка (MAE)</span><span class="val" id="f-mae">—</span><span class="note">п.п. месячного роста цен, проверка на 12 мес</span></div>
+    </div>
+    <div class="card">
+      <h2>Индекс вашей корзины и прогноз</h2>
+      <p class="muted small">Индекс: начало данных = 100. Затенённая полоса — 95% диапазон неопределённости по ошибкам модели в прошлом.</p>
+      <div class="chartbox"><canvas id="chFc"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Сравнение методов (walk-forward, 12 последних месяцев, прогноз на 1 месяц)</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Метод</th><th>Как работает</th><th class="n">MAE, п.п.</th><th class="n">RMSE, п.п.</th></tr></thead>
+        <tbody id="fcTable"></tbody>
+      </table></div>
+      <p class="callout">Модели проверяются только на будущих для них месяцах, без случайного перемешивания. Если сложный метод не обыгрывает простой, выбирается простой.</p>
+    </div>
+  </section>
+
+  <!-- SCENARIOS -->
+  <section class="panel" id="p-sc" hidden>
+    <div class="card">
+      <h2>Лаборатория сценариев</h2>
+      <p class="muted small">Задайте разовый шок и посмотрите, на сколько подорожает ваша корзина. Все допущения видны и меняются в таблице ниже.</p>
+      <div class="fields">
+        <div class="field"><label for="scFx">Ослабление сума к доллару, %</label><input type="number" id="scFx" value="10" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scUtil">Рост тарифов ЖКУ, %</label><input type="number" id="scUtil" value="0" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scFuel">Рост цен на транспорт и топливо, %</label><input type="number" id="scFuel" value="0" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scFood">Рост цен на продукты, %</label><input type="number" id="scFood" value="0" min="0" max="100" step="1"></div>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi you"><span class="lab">Ваша корзина</span><span class="val" id="sc-you">—</span><span class="note" id="sc-you-n"></span></div>
+      <div class="kpi avg"><span class="lab">Официальная корзина</span><span class="val" id="sc-avg">—</span><span class="note">тот же шок</span></div>
+    </div>
+    <div class="card explain" id="ex-sc"></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Вклад категорий в рост вашей корзины</h3>
+        <div class="bars" id="scBars"></div>
+      </div>
+      <div class="card">
+        <h3>Допущение: перенос курса в цены</h3>
+        <p class="muted small">Какая часть ослабления сума переходит в цены категории. Это условные коэффициенты для демонстрации, их нужно оценить по данным.</p>
+        <div class="tbl-wrap"><table><thead><tr><th>Категория</th><th class="n">Перенос, 0–1</th></tr></thead><tbody id="passTable"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="panel" id="p-meth" hidden>
+    <div class="card">
+      <h2>Как считается личная инфляция</h2>
+      <p>Пользователь задаёт доли расходов wᵢ (в сумме 1). Источник цен — индексы цен по категориям Iᵢ. Личная инфляция за 12 месяцев:</p>
+      <div class="formula">π<sub>личн</sub> = Σ wᵢ × (Iᵢ,ₜ / Iᵢ,ₜ₋₁₂) − 1</div>
+      <p>Индекс корзины для графиков и прогноза (база — первый месяц данных = 100):</p>
+      <div class="formula">PPIₜ = 100 × Σ wᵢ × (Iᵢ,ₜ / Iᵢ,₀)</div>
+      <p class="callout">Веса — это доли расходов, поэтому они умножаются на относительное изменение индекса, а не на уровень цены. Формула Σwᵢpᵢ,ₜ / Σwᵢpᵢ,₀ верна только если wᵢ — количества товаров.</p>
+      <p>Реальный рост зарплаты: (1 + рост зарплаты) / (1 + π) − 1.</p>
+    </div>
+    <div class="card">
+      <h2>Данные</h2>
+      <p id="dataNote"></p>
+      <p>Как построен ряд. Агентство статистики публикует ИПЦ в ежемесячных пресс-релизах, готового ряда для скачивания нет. Уровни индекса посчитаны так (декабрь 2024 = 100):</p>
+      <ul class="plain">
+        <li>2026 год: значение «к декабрю 2025» × уровень декабря 2025.</li>
+        <li>Август–декабрь 2025: значение «к декабрю 2024» из релизов за эти месяцы.</li>
+        <li>Январь–июль 2025 и август–ноябрь 2024: уровень того же месяца следующего года ÷ значение «к тому же месяцу прошлого года».</li>
+      </ul>
+      <p>Проверки: цепочка «к предыдущему месяцу» сходится со значениями «к декабрю» во всех релизах (расхождение не больше 0,15 п.п. из-за округления). Август и сентябрь 2025, посчитанные двумя путями, расходятся не больше чем на 0,12 п.п. Сводный ИПЦ, пересчитанный по оценённым весам, отличается от опубликованного не больше чем на 0,1 п.п.</p>
+      <p>Веса официальной корзины Агентство в релизах не публикует. Они оценены из опубликованного вклада разделов в рост ИПЦ за январь–сентябрь 2026: вес = вклад ÷ рост цен раздела. Точность — около ±0,5 п.п. для крупных разделов.</p>
+      <p>Можно загрузить свой CSV в том же формате (например, с новыми месяцами), и все вкладки пересчитаются. Нужно минимум 25 месяцев подряд.</p>
+      <pre id="csvTpl">month,food,alcohol,clothing,housing,furnishings,health,transport,communication,recreation,education,restaurants,insurance,misc
+2024-12,100,100,100,100,100,100,100,100,100,100,100,100,100
+2025-01,100.9,100.4,100.2,100.1,100.2,100.4,100.5,100.2,100.3,100.1,100.6,100.1,100.4
+...</pre>
+      <div class="btns">
+        <label class="btn primary" for="csvFile" style="display:inline-flex;align-items:center">Загрузить CSV</label>
+        <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+        <button class="btn" id="demoBtn">Вернуть официальные данные</button>
+        <button class="btn" id="copyTpl">Скопировать шаблон</button>
+      </div>
+      <p id="csvMsg" aria-live="polite"></p>
+    </div>
+    <div class="card">
+      <h2>Ограничения</h2>
+      <ul class="plain">
+        <li>Индексы взяты из пресс-релизов, где они округлены до 0,1; поэтому месячные изменения в ряду могут отличаться от опубликованных на ±0,1 п.п.</li>
+        <li>В январе 2026 раздел «Страхование и финансовые услуги» вырос примерно на 41% (подорожание автострахования); вес раздела мал, но он заметен на графиках по разделам.</li>
+        <li>Расчёт идёт по категориям, а не по отдельным товарам: внутри категории у разных людей цены меняются по-разному.</li>
+        <li>Доли расходов фиксированы на весь период. Если человек меняет покупки из-за роста цен, реальная инфляция для него чуть ниже.</li>
+        <li>Прогноз — статистическая экстраполяция на 1–3 месяца, не обещание. Диапазон неопределённости показан всегда.</li>
+        <li>Коэффициенты переноса курса в сценариях — условные допущения, их нужно оценить по данным. Шаблоны «Студент», «Семья», «Пенсионер» — примеры, а не статистика.</li>
+        <li>Объяснение собирается по шаблону только из рассчитанных чисел и не даёт финансовых советов. LLM-слой подключается по тем же правилам: модель получает готовые метрики и не меняет их.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Источники</h2>
+      <p class="small muted">Пресс-релизы Агентства статистики при Президенте Республики Узбекистан об индексе потребительских цен:</p>
+      <p class="small"><a href="https://stat.uz/img/news/press-reliz-ipts-za-sentyabr-2026-rus_p67192.pdf" target="_blank" rel="noopener">сентябрь 2026</a> · <a href="https://stat.uz/img/news/press-reliz-ipts-za-avgust-2026-rus_p45617.pdf" target="_blank" rel="noopener">август 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-iyul-2026-rus_p56147.pdf" target="_blank" rel="noopener">июль 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-iyun-2026-rus_p75137.pdf" target="_blank" rel="noopener">июнь 2026</a> · <a href="https://stat.uz/img/news/press-reliz-ipts-za-maj-2026-rus_p45107.pdf" target="_blank" rel="noopener">май 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-aprel-2026-rus_p64552.pdf" target="_blank" rel="noopener">апрель 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-mart-2026-rus_p83831.pdf" target="_blank" rel="noopener">март 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-fevral-2026-rus_p35938.pdf" target="_blank" rel="noopener">февраль 2026</a> · <a href="https://stat.uz/img/news/press-reliz-ipts-za-yanvar-2026-rus_p50697.pdf" target="_blank" rel="noopener">январь 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-dekabr-2025-rus_p27127.pdf" target="_blank" rel="noopener">декабрь 2025</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-noyabr-2025-eng_p62740.pdf" target="_blank" rel="noopener">ноябрь 2025 (EN)</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-oktyabr-2025-rus_p33105.pdf" target="_blank" rel="noopener">октябрь 2025</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-sentyabr-2025-eng_p86708.pdf" target="_blank" rel="noopener">сентябрь 2025 (EN)</a> · <a href="https://stat.uz/img/press-reliz-ipts-za-avgust-2025-eng_p68314.pdf" target="_blank" rel="noopener">август 2025 (EN)</a></p>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+const CATS=[
+  {id:'food',ru:'Продукты питания и напитки',uz:'Oziq-ovqat va ichimliklar',en:'Food & non-alcoholic drinks',pass:.30,col:'#2f6db5'},
+  {id:'alcohol',ru:'Алкоголь и табак',uz:'Alkogol va tamaki',en:'Alcohol & tobacco',pass:.20,col:'#7d4e3a'},
+  {id:'clothing',ru:'Одежда и обувь',uz:'Kiyim va poyabzal',en:'Clothing & footwear',pass:.50,col:'#7a9a3a'},
+  {id:'housing',ru:'Жильё и коммунальные услуги',uz:'Uy-joy va kommunal xizmatlar',en:'Housing & utilities',pass:.05,col:'#c9821b'},
+  {id:'furnishings',ru:'Товары для дома и техника',uz:'Uy-ro‘zg‘or buyumlari va texnika',en:'Furnishings & appliances',pass:.50,col:'#b5a03a'},
+  {id:'health',ru:'Здоровье',uz:'Sog‘liqni saqlash',en:'Health',pass:.40,col:'#d0605a'},
+  {id:'transport',ru:'Транспорт',uz:'Transport',en:'Transport',pass:.40,col:'#2a9d8f'},
+  {id:'communication',ru:'Информация и связь',uz:'Axborot va aloqa',en:'Information & communication',pass:.20,col:'#5c8fd6'},
+  {id:'recreation',ru:'Отдых, спорт и культура',uz:'Dam olish, sport va madaniyat',en:'Recreation, sport & culture',pass:.30,col:'#c45a9a'},
+  {id:'education',ru:'Образование',uz:'Ta’lim',en:'Education',pass:.05,col:'#8e5bb5'},
+  {id:'restaurants',ru:'Кафе, рестораны и гостиницы',uz:'Restoran va mehmonxonalar',en:'Restaurants & hotels',pass:.20,col:'#e07b39'},
+  {id:'insurance',ru:'Страхование и финансовые услуги',uz:'Sug‘urta va moliyaviy xizmatlar',en:'Insurance & financial services',pass:.10,col:'#4f6d7a'},
+  {id:'misc',ru:'Прочие товары и услуги',uz:'Boshqa tovar va xizmatlar',en:'Other goods & services',pass:.30,col:'#8a93a6'}
+];
+const PRESETS={
+  official:{food:38.9,alcohol:0.6,clothing:11.1,housing:11.4,furnishings:6.0,health:5.6,transport:10.1,communication:2.9,recreation:2.5,education:3.6,restaurants:1.8,insurance:0.3,misc:5.2},
+  student:{food:28,alcohol:0,clothing:8,housing:8,furnishings:2,health:2,transport:14,communication:7,recreation:6,education:15,restaurants:6,insurance:0,misc:4},
+  family:{food:44,alcohol:1,clothing:9,housing:13,furnishings:5,health:5,transport:8,communication:3,recreation:2,education:6,restaurants:1,insurance:0,misc:3},
+  pensioner:{food:48,alcohol:1,clothing:4,housing:18,furnishings:4,health:14,transport:3,communication:3,recreation:1,education:0,restaurants:0,insurance:0,misc:4}
+};
+const MON={ru:['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'],uz:['yan','fev','mar','apr','may','iyn','iyl','avg','sen','okt','noy','dek'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']};
+
+/* ---------- storage (per-viewer convenience) ---------- */
+function load(k,d){try{const v=localStorage.getItem('econolens:'+k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem('econolens:'+k,JSON.stringify(v))}catch(e){}}
+
+/* ---------- official data ----------
+   Agency of Statistics of Uzbekistan, monthly CPI press releases (КИПЦ РУ 2018, 13 divisions).
+   Levels: Dec 2024 = 100. Built from "к декабрю прошлого года" and "к тому же месяцу прошлого года"
+   columns of releases Aug 2025 – Sep 2026 (see Methodology tab). */
+const OFFICIAL={months:["2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],idx:{food:[94.925, 96.223, 97.164, 98.202, 100.0, 100.8, 101.415, 102.902, 103.705, 102.73, 101.529, 100.348, 101.0, 101.9, 102.8, 103.8, 105.4, 106.243, 107.297, 108.562, 109.616, 109.511, 107.824, 106.77, 107.192, 108.351],alcohol:[96.307, 97.217, 98.503, 99.436, 100.0, 100.495, 100.981, 101.186, 102.215, 103.297, 103.6, 103.811, 104.3, 104.8, 105.3, 105.8, 106.1, 106.524, 106.737, 107.055, 108.859, 109.495, 109.92, 110.662, 111.299, 111.723],clothing:[97.22, 97.598, 98.168, 99.322, 100.0, 100.396, 100.594, 100.698, 100.998, 101.103, 101.204, 101.304, 101.4, 101.6, 101.8, 102.6, 102.7, 102.905, 103.008, 103.316, 103.624, 104.035, 104.241, 104.343, 104.446, 104.651],housing:[98.46, 98.887, 99.146, 99.829, 100.0, 100.286, 100.357, 100.656, 101.214, 112.033, 113.176, 114.804, 115.1, 115.5, 116.1, 116.8, 117.1, 117.334, 117.92, 118.271, 118.622, 119.091, 128.342, 128.81, 128.81, 129.161],furnishings:[97.321, 98.075, 98.549, 99.416, 100.0, 100.498, 100.602, 100.901, 101.2, 101.402, 101.502, 101.603, 101.7, 101.9, 101.9, 102.2, 102.3, 102.709, 103.016, 103.323, 103.528, 103.937, 104.141, 104.346, 104.448, 104.858],health:[96.136, 97.398, 98.5, 99.34, 100.0, 100.882, 101.585, 101.7, 103.071, 103.368, 104.071, 104.176, 104.5, 104.8, 105.1, 105.4, 105.6, 106.128, 106.867, 107.395, 107.606, 107.606, 107.818, 108.134, 108.029, 108.24],transport:[96.238, 97.186, 97.793, 99.197, 100.0, 100.211, 101.8, 102.243, 103.22, 108.681, 108.959, 109.595, 110.0, 110.5, 110.8, 111.2, 112.0, 112.336, 112.896, 112.672, 113.232, 113.68, 116.368, 117.376, 117.824, 118.496],communication:[98.14, 98.329, 100.0, 99.906, 100.0, 99.998, 100.287, 102.043, 103.481, 105.163, 105.273, 105.41, 105.5, 105.9, 105.9, 106.1, 108.9, 110.098, 110.316, 110.207, 110.207, 110.316, 110.642, 111.84, 111.731, 111.949],recreation:[96.406, 97.493, 98.594, 99.434, 100.0, 100.786, 101.179, 101.577, 102.066, 102.767, 103.169, 103.671, 104.6, 105.0, 105.2, 105.5, 105.7, 106.228, 106.44, 106.757, 106.863, 107.391, 107.708, 108.025, 108.237, 108.66],education:[91.806, 98.678, 99.336, 99.62, 100.0, 103.548, 103.652, 103.653, 103.653, 103.757, 103.859, 103.962, 104.2, 104.5, 104.8, 104.9, 105.1, 105.205, 105.31, 105.415, 105.415, 105.52, 105.52, 105.625, 105.731, 110.145],restaurants:[95.098, 97.187, 98.175, 99.357, 100.0, 100.886, 101.487, 102.383, 103.4, 104.481, 105.376, 105.875, 106.7, 107.1, 107.6, 108.2, 108.6, 109.36, 110.012, 110.881, 112.292, 112.944, 113.596, 113.921, 114.356, 115.116],insurance:[99.503, 99.6, 99.799, 99.798, 100.0, 100.27, 100.34, 100.055, 100.193, 100.192, 99.423, 99.908, 100.1, 99.7, 99.4, 98.8, 99.7, 140.378, 140.776, 140.477, 141.973, 142.072, 143.169, 143.468, 143.269, 143.468],misc:[95.414, 96.296, 97.818, 98.991, 100.0, 101.194, 101.888, 102.77, 103.478, 104.271, 104.771, 105.273, 106.1, 106.6, 107.6, 107.9, 108.2, 109.39, 110.039, 110.58, 111.446, 111.987, 112.42, 112.853, 113.069, 113.61]}};
+function officialData(){return {months:OFFICIAL.months.slice(),idx:JSON.parse(JSON.stringify(OFFICIAL.idx)),source:'stat',name:'Агентство статистики'}}
+/* ---------- state ---------- */
+let D=officialData();
+let W=load('weights13',null)||Object.assign({},PRESETS.official);
+CATS.forEach(c=>{if(typeof W[c.id]!=='number')W[c.id]=0});
+let LANG=load('lang','ru');
+let TAB=load('tab','basket');
+let PASS=load('pass13',null)||Object.fromEntries(CATS.map(c=>[c.id,c.pass]));
+const charts={};
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const name=(c,l)=>c[l||'ru'];
+function norm(wp){const s=CATS.reduce((a,c)=>a+(+wp[c.id]||0),0);const w={};CATS.forEach(c=>w[c.id]=s>0?(+wp[c.id]||0)/s:0);return w}
+function wSum(){return Math.round(CATS.reduce((a,c)=>a+(+W[c.id]||0),0)*10)/10}
+function fnum(x,d,l){const s=Math.abs(x).toFixed(d);return (l==='en'?s:s.replace('.',','))}
+function pct(x,d=1,l='ru',sign=false){const v=x*100;return (sign?(v>0.0001?'+':v<-0.0001?'−':''):(v<0?'−':''))+fnum(v,d,l)+'%'}
+function pp(x,d=1,l='ru'){const v=x*100;return (v>0.0001?'+':v<-0.0001?'−':'')+fnum(v,d,l)}
+function sum(n,l='ru'){const r=Math.round(n);const s=Math.abs(r).toLocaleString(l==='en'?'en-US':'ru-RU').replace(/ /g,' ');return (r<0?'−':'')+s+(l==='en'?' UZS':l==='uz'?' so‘m':' сум')}
+function mlabel(m,l='ru'){return MON[l][+m.slice(5)-1]+' '+m.slice(0,4)}
+function parseMoney(s){const d=String(s).replace(/[^\d]/g,'');return d?+d:NaN}
+function addMonths(m,k){let y=+m.slice(0,4),mo=+m.slice(5)-1+k;y+=Math.floor(mo/12);mo=((mo%12)+12)%12;return y+'-'+String(mo+1).padStart(2,'0')}
+
+/* ---------- core economics ---------- */
+const T=()=>D.months.length-1;
+function catYoy(id,t){const a=D.idx[id];return a[t]/a[t-12]-1}
+function yoy(w,t){return CATS.reduce((s,c)=>s+w[c.id]*catYoy(c.id,t),0)}
+function level(w){return D.months.map((_,t)=>100*CATS.reduce((s,c)=>s+w[c.id]*D.idx[c.id][t]/D.idx[c.id][0],0))}
+
+function forecast(w){
+  const L=level(w);const m=[];for(let k=1;k<L.length;k++)m.push(L[k]/L[k-1]-1);
+  const n=m.length;
+  const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
+  const methods=[
+    {id:'naive',ru:'Наивный',how:'следующий месяц = прошлый месяц',pred:(o)=>m[o-1],fut:(h)=>m[n-1]},
+    {id:'snaive',ru:'Сезонный наивный',how:'как в том же месяце год назад',pred:(o)=>m[o-12],fut:(h)=>m[n-12+h]},
+    {id:'ma12',ru:'Среднее за 12 мес',how:'средний месячный рост за год',pred:(o)=>mean(m.slice(o-12,o)),fut:(h)=>mean(m.slice(n-12))},
+    {id:'blend',ru:'Сезонность + тренд',how:'сезонный профиль + сдвиг уровня за год',
+      pred:(o)=>m[o-12]+(mean(m.slice(o-12,o))-mean(m.slice(o-24,o-12))),
+      fut:(h)=>m[n-12+h]+(mean(m.slice(n-12))-mean(m.slice(n-24,n-12)))}
+  ];
+  const minO=n-12;
+  const usable=methods.filter(x=>x.id!=='blend'||n>=36);
+  for(const me of usable){
+    const errs=[];for(let o=minO;o<n;o++)errs.push(m[o]-me.pred(o));
+    me.mae=mean(errs.map(Math.abs));me.rmse=Math.sqrt(mean(errs.map(e=>e*e)));
+  }
+  const best=usable.reduce((a,b)=>b.mae<a.mae-1e-12?b:a);
+  const H=3;const fut=[];let lv=L[L.length-1],cum=1;
+  for(let h=0;h<H;h++){const r=best.fut(h);cum*=1+r;lv*=1+r;
+    const band=1.96*best.rmse*Math.sqrt(h+1);
+    fut.push({lv,cum:cum-1,lo:lv*(1-band),hi:lv*(1+band),loCum:cum-1-band,hiCum:cum-1+band});}
+  return {L,methods:usable,best,fut,naiveMae:usable.find(x=>x.id==='naive').mae};
+}
+
+/* ---------- explainer (template, grounded in computed numbers only) ---------- */
+const EX_HEAD={ru:'Объяснение',uz:'Izoh',en:'Explanation'};
+const EX_FOOT={ru:'Текст собран только из чисел на этой странице. Это не прогноз цен и не финансовый совет.',uz:'Matn faqat shu sahifadagi raqamlardan tuzilgan. Bu narx bashorati yoki moliyaviy maslahat emas.',en:'This text uses only the numbers on this page. It is not a price promise or financial advice.'};
+function renderExplain(el,txt){
+  el.innerHTML='<div class="eh"><h3>'+EX_HEAD[LANG]+' · '+LANG.toUpperCase()+'</h3></div><p class="txt"></p><p class="small muted"></p>';
+  el.querySelector('.txt').textContent=txt;el.querySelector('.small').textContent=EX_FOOT[LANG];
+}
+function exInfl(r){
+  const l=LANG,hi=r.pu>r.po,d=fnum(Math.abs(r.pu-r.po)*100,1,l);
+  const c1=r.contrib[0],c2=r.contrib[1],g=r.gap[0];
+  const more=g.wu>g.wo;const wu=fnum(g.wu*100,0,l),wo=fnum(g.wo*100,0,l);
+  const per=mlabel(D.months[T()-12],l)+' – '+mlabel(D.months[T()],l);
+  if(l==='uz')return `So‘nggi 12 oyda (${per}) savatingiz narxi ${pct(r.pu,1,l)} ga oshdi. Rasmiy savat ${pct(r.po,1,l)} ga qimmatladi, ya’ni shaxsiy inflyatsiyangiz ${d} foiz punkti ${hi?'yuqori':'past'}. Eng katta hissa «${c1.c.uz}» toifasiga to‘g‘ri keladi (${pp(c1.v,1,l)} f.p.), keyin «${c2.c.uz}» (${pp(c2.v,1,l)} f.p.). Farqning asosiy sababi — «${g.c.uz}» ulushi sizda ${more?'ko‘proq':'kamroq'}: ${wu}% va rasmiy ${wo}%, bu toifada narxlar ${pct(g.r,1,l)} ga o‘zgargan.`;
+  if(l==='en')return `Over the last 12 months (${per}) your basket became ${pct(r.pu,1,l)} more expensive. The official basket rose ${pct(r.po,1,l)}, so your personal inflation is ${d} percentage points ${hi?'higher':'lower'}. The biggest contribution came from ${c1.c.en} (${pp(c1.v,1,l)} pp), followed by ${c2.c.en} (${pp(c2.v,1,l)} pp). The gap is mainly explained by your ${more?'larger':'smaller'} share of ${g.c.en}: ${wu}% versus ${wo}% in the official basket, in a category where prices changed by ${pct(g.r,1,l)}.`;
+  return `За последние 12 месяцев (${per}) ваша корзина подорожала на ${pct(r.pu,1,l)}. Официальная корзина подорожала на ${pct(r.po,1,l)}, то есть ваша личная инфляция на ${d} п.п. ${hi?'выше':'ниже'}. Больше всего к росту добавила категория «${c1.c.ru}» (${pp(c1.v,1,l)} п.п.), затем «${c2.c.ru}» (${pp(c2.v,1,l)} п.п.). Разница с официальной корзиной в основном объясняется тем, что у вас ${more?'больше':'меньше'} доля категории «${g.c.ru}»: ${wu}% против ${wo}% в официальной корзине, а цены в ней изменились на ${pct(g.r,1,l)}.`;
+}
+function exSal(s){
+  const l=LANG;
+  if(!isFinite(s.now)||s.now<=0){return {ru:'Введите зарплату, чтобы увидеть расчёт.',uz:'Hisob-kitobni ko‘rish uchun maoshingizni kiriting.',en:'Enter your salary to see the calculation.'}[l]}
+  let t='';
+  if(isFinite(s.prev)&&s.prev>0){
+    const ok=s.now>=s.need;
+    if(l==='uz')t=`Maoshingiz 12 oyda ${pct(s.g,1,l)} ga o‘zgardi, shaxsiy inflyatsiyangiz esa ${pct(s.pu,1,l)}. Shuning uchun real maosh ${pct(s.real,1,l,true)} ga o‘zgardi. Bir yil oldingi xaridlarni saqlash uchun ${sum(s.need,l)} kerak; sizning maoshingiz bundan ${sum(Math.abs(s.now-s.need),l)} ga ${ok?'ko‘p':'kam'}.`;
+    else if(l==='en')t=`Your salary changed by ${pct(s.g,1,l)} over 12 months while your personal inflation was ${pct(s.pu,1,l)}, so your real salary changed by ${pct(s.real,1,l,true)}. To buy what you bought a year ago you need ${sum(s.need,l)}; your salary is ${sum(Math.abs(s.now-s.need),l)} ${ok?'above':'below'} that.`;
+    else t=`За 12 месяцев зарплата выросла на ${pct(s.g,1,l)}, а ваша личная инфляция составила ${pct(s.pu,1,l)}. Поэтому реальная зарплата изменилась на ${pct(s.real,1,l,true)}. Чтобы покупать столько же, сколько год назад, нужно ${sum(s.need,l)}; ваша зарплата ${ok?'выше':'ниже'} этого уровня на ${sum(Math.abs(s.now-s.need),l)}.`;
+  }
+  const f=s.fc;
+  if(l==='uz')t+=` Agar maosh oshmasa, keyingi 3 oyda uning xarid qobiliyati taxminan ${pct(f,1,l)} ga (${sum(s.now*f/(1+f),l)}) kamayishi mumkin; bu statistik baho, aniq va’da emas.`;
+  else if(l==='en')t+=` If your salary stays the same, its purchasing power may fall by about ${pct(f,1,l)} (${sum(s.now*f/(1+f),l)}) over the next 3 months; this is a statistical estimate, not a certainty.`;
+  else t+=` Если зарплата не изменится, за следующие 3 месяца её покупательная способность может снизиться примерно на ${pct(f,1,l)} (${sum(s.now*f/(1+f),l)}). Это статистическая оценка, а не точное обещание.`;
+  return t.trim();
+}
+function exSc(r){
+  const l=LANG,top=r.parts[0];
+  if(r.you<1e-9)return {ru:'Задайте шок выше, чтобы увидеть, как изменится корзина.',uz:'Savat qanday o‘zgarishini ko‘rish uchun yuqorida zarba kiriting.',en:'Set a shock above to see how your basket changes.'}[l];
+  if(l==='uz')return `Ushbu stsenariyda savatingiz ${pct(r.you,1,l)} ga, rasmiy savat ${pct(r.avg,1,l)} ga qimmatlaydi. Eng katta hissa «${top.c.uz}» toifasidan (${pp(top.v,1,l)} f.p.).`+(r.spend?` Oylik xarajatlaringiz uchun bu taxminan ${sum(r.spend*r.you,l)} qo‘shimcha degani.`:'');
+  if(l==='en')return `In this scenario your basket becomes ${pct(r.you,1,l)} more expensive and the official basket ${pct(r.avg,1,l)}. The largest share comes from ${top.c.en} (${pp(top.v,1,l)} pp).`+(r.spend?` For your monthly spending that is roughly ${sum(r.spend*r.you,l)} extra.`:'');
+  return `В этом сценарии ваша корзина подорожает на ${pct(r.you,1,l)}, официальная — на ${pct(r.avg,1,l)}. Больше всего добавляет категория «${top.c.ru}» (${pp(top.v,1,l)} п.п.).`+(r.spend?` Для ваших месячных расходов это примерно ${sum(r.spend*r.you,l)} сверху.`:'');
+}
+
+/* ---------- renderers ---------- */
+function renderBasketRows(){
+  const box=$('basketRows');box.innerHTML='';
+  CATS.forEach(c=>{
+    const row=document.createElement('div');row.className='brow';
+    row.innerHTML=`<div class="nm">${c.ru}<small>${c.uz} · ${c.en}</small></div>
+      <input type="range" min="0" max="70" step="0.1" id="r-${c.id}" aria-label="${c.ru}, доля">
+      <div class="numin"><input type="number" min="0" max="100" step="0.1" id="n-${c.id}" aria-label="${c.ru}, %"><span class="muted">%</span></div>`;
+    box.appendChild(row);
+    const r=row.querySelector('input[type=range]'),n=row.querySelector('input[type=number]');
+    r.value=W[c.id];n.value=W[c.id];
+    r.addEventListener('input',()=>{W[c.id]=+r.value;n.value=r.value;onWeights()});
+    n.addEventListener('input',()=>{let v=Math.max(0,Math.min(100,Math.round((+n.value||0)*10)/10));W[c.id]=v;r.value=v;onWeights()});
+  });
+}
+function syncRows(){CATS.forEach(c=>{$('r-'+c.id).value=W[c.id];$('n-'+c.id).value=W[c.id]})}
+function renderBasketSummary(){
+  const s=wSum(),st=$('sumStatus');
+  const ok=Math.abs(s-100)<0.05;st.textContent='Сумма: '+String(s).replace('.',',')+'%'+(ok?'':' · расчёт нормирует доли');
+  st.className='status '+(ok?'ok':'bad');
+  const wu=norm(W),wo=norm(PRESETS.official);
+  const fill=(el,w)=>{el.innerHTML='';CATS.forEach(c=>{if(w[c.id]>0){const i=document.createElement('i');i.style.width=(w[c.id]*100)+'%';i.style.background=c.col;i.title=c.ru+': '+Math.round(w[c.id]*100)+'%';el.appendChild(i)}})};
+  fill($('stackYou'),wu);fill($('stackAvg'),wo);
+  $('stackLegend').innerHTML=CATS.map(c=>`<span><b style="background:${c.col}"></b>${c.ru}</span>`).join('');
+}
+function onWeights(){save('weights13',W);renderBasketSummary();if(TAB!=='basket')renderTab()}
+
+function infCalc(){
+  const t=T(),wu=norm(W),wo=norm(PRESETS.official);
+  const pu=yoy(wu,t),po=yoy(wo,t);
+  const contrib=CATS.map(c=>({c,v:wu[c.id]*catYoy(c.id,t)})).sort((a,b)=>b.v-a.v);
+  const gap=CATS.map(c=>({c,wu:wu[c.id],wo:wo[c.id],r:catYoy(c.id,t),v:(wu[c.id]-wo[c.id])*(catYoy(c.id,t)-po)})).sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
+  return {t,wu,wo,pu,po,contrib,gap};
+}
+function barsHTML(items,signed){
+  const max=Math.max(...items.map(x=>Math.abs(x.v)),1e-9);
+  return items.map(x=>{
+    const w=Math.abs(x.v)/max*(signed?50:100);
+    const left=signed?(x.v>=0?50:50-w):0;
+    return `<div class="bar"><span>${x.c.ru}</span><span class="track">${signed?'<span class="zero" style="left:50%"></span>':''}<i class="${x.v<0?'neg':''}" style="left:${left}%;width:${w}%"></i></span><span class="v">${pp(x.v,1)}</span></div>`;
+  }).join('');
+}
+function renderInfl(){
+  const r=infCalc();
+  $('k-you').textContent=pct(r.pu);$('k-avg').textContent=pct(r.po);
+  const g=$('k-gap');g.textContent=pp(r.pu-r.po)+' п.п.';g.className='val '+(r.pu>r.po?'up':'down');
+  $('k-you-n').textContent=mlabel(D.months[r.t-12])+' – '+mlabel(D.months[r.t]);
+  $('contribBars').innerHTML=barsHTML(r.contrib,r.contrib.some(x=>x.v<0));
+  $('gapBars').innerHTML=barsHTML(r.gap,true);
+  renderExplain($('ex-infl'),exInfl(r));
+  const labels=[],a=[],b=[];
+  for(let t=12;t<=r.t;t++){labels.push(mlabel(D.months[t]));a.push(+(yoy(r.wu,t)*100).toFixed(2));b.push(+(yoy(r.wo,t)*100).toFixed(2))}
+  drawLine('chYoy',labels,[
+    {label:'Ваша корзина',data:a,borderColor:css('--accent'),backgroundColor:css('--accent'),borderWidth:2.5,pointRadius:0,tension:.25},
+    {label:'Официальная корзина',data:b,borderColor:css('--saffron'),backgroundColor:css('--saffron'),borderWidth:2,borderDash:[5,4],pointRadius:0,tension:.25}
+  ],v=>v.toFixed(0)+'%');
+}
+
+function salCalc(){
+  const now=parseMoney($('salNow').value),prev=parseMoney($('salPrev').value),spend=parseMoney($('spend').value);
+  const r=infCalc(),f=forecast(r.wu);
+  const fc=f.fut[2].cum;
+  const g=now/prev-1;
+  return {now,prev,spend,pu:r.pu,po:r.po,g,real:(1+g)/(1+r.pu)-1,realAvg:(1+g)/(1+r.po)-1,need:prev*(1+r.pu),needAvg:prev*(1+r.po),fc,fcLo:f.fut[2].loCum,fcHi:f.fut[2].hiCum};
+}
+function renderSalary(){
+  const s=salCalc();const hasPrev=isFinite(s.prev)&&s.prev>0,hasNow=isFinite(s.now)&&s.now>0;
+  const setK=(id,v,cls)=>{const e=$(id);e.textContent=v;e.className='val'+(cls?' '+cls:'')};
+  if(hasPrev&&hasNow){
+    setK('s-nom',pct(s.g,1,'ru',true));
+    setK('s-real',pct(s.real,1,'ru',true),s.real>=0?'down':'up');
+    setK('s-real-avg',pct(s.realAvg,1,'ru',true));
+  }else{['s-nom','s-real','s-real-avg'].forEach(id=>setK(id,'—'))}
+  const cmp=$('salCompare');
+  if(hasPrev&&hasNow){
+    const rows=[
+      {l:'Зарплата год назад',v:s.prev,col:css('--line')},
+      {l:'Нужно сейчас по вашей инфляции',v:s.need,col:css('--accent')},
+      {l:'Нужно сейчас по официальной инфляции',v:s.needAvg,col:css('--saffron')},
+      {l:'Ваша зарплата сейчас',v:s.now,col:s.now>=s.need?css('--good'):css('--bad')}
+    ];
+    const max=Math.max(...rows.map(x=>x.v));
+    cmp.innerHTML=rows.map(x=>`<div class="cmp"><span>${x.l}</span><span class="track"><i style="width:${x.v/max*100}%;background:${x.col}"></i></span><span class="v">${sum(x.v)}</span></div>`).join('');
+    const d=s.now-s.need;
+    $('salNeedNote').textContent=d>=0?`Зарплата покрывает рост цен вашей корзины с запасом ${sum(d)} в месяц.`:`До уровня прошлого года не хватает ${sum(-d)} в месяц.`;
+  }else{cmp.innerHTML='<p class="muted small">Введите зарплату сейчас и год назад.</p>';$('salNeedNote').textContent=''}
+  const li=[];
+  if(isFinite(s.spend)&&s.spend>0){
+    const old=s.spend/(1+s.pu);
+    li.push(`Те же покупки год назад стоили около <b class="mono">${sum(old)}</b>. Сейчас вы платите за них на <b class="mono">${sum(s.spend-old)}</b> в месяц больше, это около <b class="mono">${sum((s.spend-old)*12)}</b> в год.`);
+    if(hasNow)li.push(`Расходы составляют <b class="mono">${pct(s.spend/s.now,0)}</b> зарплаты; остаётся <b class="mono">${sum(s.now-s.spend)}</b>.`);
+  }else li.push('Укажите месячные расходы, чтобы увидеть, сколько вы доплачиваете за ту же корзину.');
+  if(hasNow){
+    li.push(`Если зарплата не изменится, через 3 месяца её покупательная способность может снизиться примерно на <b class="mono">${pct(s.fc)}</b> (диапазон ${pct(Math.max(s.fcLo,-1))} … ${pct(s.fcHi)}), то есть на <b class="mono">${sum(s.now*s.fc/(1+s.fc))}</b> в ценах сегодняшнего дня.`);
+  }
+  $('salList').innerHTML=li.map(x=>'<li>'+x+'</li>').join('');
+  renderExplain($('ex-sal'),exSal(s));
+}
+
+function renderFc(){
+  const wu=norm(W),f=forecast(wu);
+  $('f-3m').textContent=pct(f.fut[2].cum,1,'ru',true);
+  $('f-3m-n').textContent='рост индекса корзины к '+mlabel(addMonths(D.months[T()],3))+'; 95%: '+pct(f.fut[2].loCum,1,'ru',true)+' … '+pct(f.fut[2].hiCum,1,'ru',true);
+  $('f-best').textContent=f.best.ru;
+  $('f-best-n').textContent=f.best.id==='naive'?'простой метод оказался лучшим':'лучше наивного на '+fnum((1-f.best.mae/f.naiveMae)*100,0)+'% по MAE';
+  $('f-mae').textContent=fnum(f.best.mae*100,2);
+  $('fcTable').innerHTML=f.methods.map(m=>`<tr class="${m===f.best?'best':''}"><td>${m.ru}</td><td>${m.how}</td><td class="n">${fnum(m.mae*100,2)}</td><td class="n">${fnum(m.rmse*100,2)}</td></tr>`).join('');
+  const start=Math.max(0,f.L.length-24),labels=[],hist=[],fc=[],lo=[],hi=[];
+  for(let t=start;t<f.L.length;t++){labels.push(mlabel(D.months[t]));hist.push(+f.L[t].toFixed(2));fc.push(null);lo.push(null);hi.push(null)}
+  const last=f.L.length-1-start;fc[last]=hist[last];lo[last]=hist[last];hi[last]=hist[last];
+  f.fut.forEach((p,h)=>{labels.push(mlabel(addMonths(D.months[T()],h+1)));hist.push(null);fc.push(+p.lv.toFixed(2));lo.push(+p.lo.toFixed(2));hi.push(+p.hi.toFixed(2))});
+  const acc=css('--accent');
+  drawLine('chFc',labels,[
+    {label:'Верхняя граница',data:hi,borderColor:'transparent',backgroundColor:hexA(acc,.18),pointRadius:0,fill:'+1',spanGaps:false},
+    {label:'Нижняя граница',data:lo,borderColor:'transparent',backgroundColor:hexA(acc,.18),pointRadius:0,fill:false},
+    {label:'Индекс корзины',data:hist,borderColor:acc,backgroundColor:acc,borderWidth:2.5,pointRadius:0,tension:.2},
+    {label:'Прогноз',data:fc,borderColor:css('--saffron'),backgroundColor:css('--saffron'),borderWidth:2.5,borderDash:[5,4],pointRadius:3,tension:.2}
+  ],v=>v.toFixed(0),true);
+}
+
+function scCalc(){
+  const fx=(+$('scFx').value||0)/100,u=(+$('scUtil').value||0)/100,fu=(+$('scFuel').value||0)/100,fo=(+$('scFood').value||0)/100;
+  const shock={};CATS.forEach(c=>{let s=(+PASS[c.id]||0)*fx;if(c.id==='housing')s+=u;if(c.id==='transport')s+=fu;if(c.id==='food')s+=fo;shock[c.id]=s});
+  const wu=norm(W),wo=norm(PRESETS.official);
+  const you=CATS.reduce((a,c)=>a+wu[c.id]*shock[c.id],0),avg=CATS.reduce((a,c)=>a+wo[c.id]*shock[c.id],0);
+  const parts=CATS.map(c=>({c,v:wu[c.id]*shock[c.id]})).sort((a,b)=>b.v-a.v);
+  const sp=parseMoney($('spend').value);
+  return {you,avg,parts,spend:isFinite(sp)&&sp>0?sp:0};
+}
+function renderSc(){
+  const r=scCalc();
+  $('sc-you').textContent=pct(r.you,1,'ru',true);$('sc-avg').textContent=pct(r.avg,1,'ru',true);
+  $('sc-you-n').textContent=r.spend?'≈ '+sum(r.spend*r.you)+' в месяц к вашим расходам':'разовый рост стоимости корзины';
+  $('scBars').innerHTML=barsHTML(r.parts,false);
+  renderExplain($('ex-sc'),exSc(r));
+}
+function renderPassTable(){
+  $('passTable').innerHTML=CATS.map(c=>`<tr><td>${c.ru}</td><td class="n"><input type="number" id="pass-${c.id}" min="0" max="1" step="0.05" value="${PASS[c.id]}" style="width:80px" aria-label="Перенос курса: ${c.ru}"></td></tr>`).join('');
+  CATS.forEach(c=>$('pass-'+c.id).addEventListener('input',e=>{const v=Math.max(0,Math.min(1,+e.target.value||0));PASS[c.id]=v;save('pass13',PASS);renderSc()}));
+}
+
+function renderMeta(){
+  const chip=$('srcChip');chip.textContent=D.source==='stat'?'Данные: Агентство статистики':'Данные: '+D.name;chip.className='chip';
+  $('lastChip').textContent='данные по '+mlabel(D.months[T()]);
+  $('dataNote').textContent=D.source==='stat'
+    ?`Загружены официальные индексы цен по 13 разделам классификации КИПЦ РУ 2018: ${D.months.length} месяцев (${mlabel(D.months[0])} – ${mlabel(D.months[T()])}), декабрь 2024 = 100.`
+    :`Загружен файл «${D.name}»: ${D.months.length} месяцев (${mlabel(D.months[0])} – ${mlabel(D.months[T()])}).`;
+}
+
+/* ---------- charts ---------- */
+function hexA(c,a){const m=c.match(/^#([0-9a-f]{6})$/i);if(!m)return c;const n=parseInt(m[1],16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
+function drawLine(id,labels,datasets,fmt,hideBandLegend){
+  if(typeof Chart==='undefined'){const cv=$(id);cv.parentElement.innerHTML='<p class="muted small">График не загрузился. Числа выше рассчитаны и без него.</p>';return}
+  if(charts[id])charts[id].destroy();
+  const ink=css('--muted'),grid=css('--line');
+  charts[id]=new Chart($(id),{type:'line',data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{color:ink,boxWidth:12,font:{family:'Golos Text'},filter:i=>!hideBandLegend||!/граница/.test(i.text)}},
+      tooltip:{filter:i=>i.raw!==null&&!/граница/.test(i.dataset.label),callbacks:{label:i=>i.dataset.label+': '+String(i.raw.toFixed(id==='chYoy'?1:2)).replace('.',',')+(id==='chYoy'?'%':'')}}},
+    scales:{x:{ticks:{color:ink,maxRotation:0,autoSkipPadding:14,font:{family:'Golos Text'}},grid:{display:false}},
+      y:{ticks:{color:ink,callback:fmt,font:{family:'JetBrains Mono'}},grid:{color:grid}}}
+  }});
+}
+
+/* ---------- tabs ---------- */
+function renderTab(){
+  if(TAB==='basket')renderBasketSummary();
+  else if(TAB==='infl')renderInfl();
+  else if(TAB==='salary')renderSalary();
+  else if(TAB==='fc')renderFc();
+  else if(TAB==='sc')renderSc();
+  else if(TAB==='meth')renderMeta();
+}
+function setTab(t){
+  TAB=t;save('tab',t);
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));
+  document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);
+  renderTab();
+}
+function setLang(l){LANG=l;save('lang',l);document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===l)));renderTab()}
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  const lines=text.replace(/\r/g,'').split('\n').map(s=>s.trim()).filter(Boolean);
+  if(lines.length<2)throw new Error('В файле нет строк с данными.');
+  const sep=lines[0].includes(';')?';':',';
+  const head=lines[0].split(sep).map(s=>s.trim().toLowerCase());
+  if(head[0]!=='month')throw new Error('Первый столбец должен называться month.');
+  const miss=CATS.filter(c=>!head.includes(c.id)).map(c=>c.id);
+  if(miss.length)throw new Error('Не хватает столбцов: '+miss.join(', ')+'.');
+  const months=[],idx=Object.fromEntries(CATS.map(c=>[c.id,[]]));
+  lines.slice(1).forEach((ln,i)=>{
+    const cells=ln.split(sep).map(s=>s.trim());
+    const m=cells[0];if(!/^\d{4}-\d{2}$/.test(m))throw new Error(`Строка ${i+2}: месяц должен быть в формате ГГГГ-ММ, сейчас «${m}».`);
+    months.push(m);
+    CATS.forEach(c=>{const v=parseFloat((cells[head.indexOf(c.id)]||'').replace(',','.'));if(!(v>0))throw new Error(`Строка ${i+2}, столбец ${c.id}: нужно положительное число.`);idx[c.id].push(v)});
+  });
+  for(let k=1;k<months.length;k++)if(months[k]!==addMonths(months[k-1],1))throw new Error(`Месяцы должны идти подряд без пропусков: после ${months[k-1]} идёт ${months[k]}.`);
+  if(months.length<25)throw new Error(`Нужно минимум 25 месяцев, в файле ${months.length}.`);
+  return {months,idx};
+}
+
+/* ---------- init ---------- */
+renderBasketRows();
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{W=Object.assign({},PRESETS[b.dataset.preset]);syncRows();onWeights()}));
+$('normBtn').addEventListener('click',()=>{
+  const s=wSum();if(!s)return;
+  const raw=CATS.map(c=>({id:c.id,x:W[c.id]*100/s}));
+  raw.forEach(r=>W[r.id]=Math.floor(r.x));
+  let rest=100-wSum();raw.sort((a,b)=>(b.x%1)-(a.x%1)).forEach(r=>{if(rest>0){W[r.id]++;rest--}});
+  syncRows();onWeights();
+});
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.lang)));
+['salNow','salPrev','spend'].forEach(id=>{
+  const el=$(id);
+  el.addEventListener('input',()=>{const n=parseMoney(el.value);const pos=el.value.length-el.selectionStart;el.value=isFinite(n)?n.toLocaleString('ru-RU').replace(/ /g,' '):'';try{const p=Math.max(0,el.value.length-pos);el.setSelectionRange(p,p)}catch(e){}renderSalary()});
+});
+['scFx','scUtil','scFuel','scFood'].forEach(id=>$(id).addEventListener('input',renderSc));
+renderPassTable();
+$('csvFile').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;const msg=$('csvMsg');
+  const rd=new FileReader();
+  rd.onload=()=>{try{const p=parseCSV(String(rd.result));D={...p,source:'file',name:f.name};msg.className='okmsg';msg.textContent=`Загружено: ${p.months.length} месяцев. Все вкладки пересчитаны по вашему файлу.`;renderMeta()}catch(err){msg.className='err';msg.textContent=err.message}e.target.value=''};
+  rd.onerror=()=>{msg.className='err';msg.textContent='Не удалось прочитать файл. Попробуйте сохранить его как CSV в кодировке UTF-8.'};
+  rd.readAsText(f);
+});
+$('demoBtn').addEventListener('click',()=>{D=officialData();const m=$('csvMsg');m.className='okmsg';m.textContent='Возвращены официальные данные.';renderMeta()});
+$('copyTpl').addEventListener('click',()=>{
+  const txt='month,'+CATS.map(c=>c.id).join(',');const m=$('csvMsg');
+  navigator.clipboard.writeText(txt).then(()=>{m.className='okmsg';m.textContent='Строка заголовков скопирована.'}).catch(()=>{const r=document.createRange();r.selectNodeContents($('csvTpl'));const s=getSelection();s.removeAllRanges();s.addRange(r);m.className='muted small';m.textContent='Шаблон выделен, скопируйте его вручную.'});
+});
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderTab)}catch(e){}
+new MutationObserver(renderTab).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+renderMeta();
+setTab(['basket','infl','salary','fc','sc','meth'].includes(TAB)?TAB:'basket');
+setLang(['ru','uz','en'].includes(LANG)?LANG:'ru');
+})();
+</script>
+
+</body>
+</html>
