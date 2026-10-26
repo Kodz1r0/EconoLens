@@ -4,7 +4,7 @@
 
 Official inflation is an average. A household that spends half its budget on food, or a student who pays tuition, can face a very different number. EconoLens lets a person enter the shares of their spending, measures the inflation of *their* basket, compares it with the official CPI, shows what it means for their salary, and explains the result in Russian, Uzbek or English.
 
-**Live demo:** `https://<your-username>.github.io/econolens-uzbekistan/` (see [Publishing the demo](#publishing-the-demo))
+Live demo: https://kodz1r0.github.io/EconoLens/
 
 > Status: MVP. Data through September 2026. The explanation layer is template-based for now; an LLM layer is planned (see [Roadmap](#roadmap)).
 
