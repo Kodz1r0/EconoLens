@@ -104,6 +104,12 @@ input[type=number],input[type=text]{font:500 .95rem var(--f-mono);font-variant-n
 .explain .eh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .explain .eh h3{font-family:var(--f-display);font-weight:500;font-size:.95rem;color:var(--accent)}
 .explain p.txt{font-size:1rem;max-width:68ch}
+.explain p.txt.streaming{color:var(--muted)}
+.eh-actions{display:flex;gap:8px;align-items:center}
+.btn.ai{background:var(--surface);border-color:var(--accent);color:var(--accent)}
+.btn.ai:disabled{opacity:.6;cursor:wait}
+.ai-note{font-size:.85rem;margin:0}
+.ai-note.ok{color:var(--good)} .ai-note.bad{color:var(--saffron)}
 .tbl-wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:.88rem}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -138,26 +144,26 @@ a{color:var(--accent)}
   <header>
     <div>
       <h1>Econo<span>Lens</span> Uzbekistan</h1>
-      <p class="sub">Личная инфляция и покупательная способность</p>
+      <p class="sub" data-i18n="sub">Личная инфляция и покупательная способность</p>
     </div>
     <div class="hright">
-      <span class="chip" id="srcChip">Агентство статистики</span>
+      <span class="chip" id="srcChip">Данные: Агентство статистики</span>
       <span class="chip mono" id="lastChip">—</span>
-      <div class="seg" role="group" aria-label="Язык объяснений">
-        <button id="lang-ru" data-lang="ru" aria-pressed="true">RU</button>
-        <button id="lang-uz" data-lang="uz" aria-pressed="false">UZ</button>
-        <button id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+      <div class="seg" role="group" aria-label="Язык" data-i18n-aria="lang_aria">
+        <button id="lang-ru" data-lang="ru" lang="ru" aria-pressed="true">RU</button>
+        <button id="lang-uz" data-lang="uz" lang="uz" aria-pressed="false">UZ</button>
+        <button id="lang-en" data-lang="en" lang="en" aria-pressed="false">EN</button>
       </div>
     </div>
   </header>
 
   <nav class="tabs" role="tablist">
-    <button role="tab" id="t-basket" data-tab="basket" aria-selected="true">Корзина</button>
-    <button role="tab" id="t-infl" data-tab="infl" aria-selected="false">Моя инфляция</button>
-    <button role="tab" id="t-salary" data-tab="salary" aria-selected="false">Зарплата</button>
-    <button role="tab" id="t-fc" data-tab="fc" aria-selected="false">Прогноз</button>
-    <button role="tab" id="t-sc" data-tab="sc" aria-selected="false">Сценарии</button>
-    <button role="tab" id="t-meth" data-tab="meth" aria-selected="false">Методология и данные</button>
+    <button role="tab" id="t-basket" data-tab="basket" aria-selected="true" data-i18n="tab_basket">Корзина</button>
+    <button role="tab" id="t-infl" data-tab="infl" aria-selected="false" data-i18n="tab_infl">Моя инфляция</button>
+    <button role="tab" id="t-salary" data-tab="salary" aria-selected="false" data-i18n="tab_salary">Зарплата</button>
+    <button role="tab" id="t-fc" data-tab="fc" aria-selected="false" data-i18n="tab_fc">Прогноз</button>
+    <button role="tab" id="t-sc" data-tab="sc" aria-selected="false" data-i18n="tab_sc">Сценарии</button>
+    <button role="tab" id="t-meth" data-tab="meth" aria-selected="false" data-i18n="tab_meth">Методология и данные</button>
   </nav>
 
   <!-- BASKET -->
@@ -165,26 +171,26 @@ a{color:var(--accent)}
     <div class="card">
       <div class="sumline">
         <div>
-          <h2>Ваша корзина расходов</h2>
-          <p class="muted small">Укажите, какую долю месячных расходов занимает каждая категория. Точные суммы не нужны.</p>
+          <h2 data-i18n="basket_h">Ваша корзина расходов</h2>
+          <p class="muted small" data-i18n="basket_p">Укажите, какую долю месячных расходов занимает каждая категория. Точные суммы не нужны.</p>
         </div>
         <span class="status ok" id="sumStatus">Сумма: 100%</span>
       </div>
       <div class="btns">
-        <span class="muted small" style="align-self:center">Шаблоны:</span>
-        <button class="btn" data-preset="official">Официальная корзина ИПЦ</button>
-        <button class="btn" data-preset="student">Студент</button>
-        <button class="btn" data-preset="family">Семья с детьми</button>
-        <button class="btn" data-preset="pensioner">Пенсионер</button>
-        <button class="btn primary" id="normBtn">Привести к 100%</button>
+        <span class="muted small" style="align-self:center" data-i18n="presets">Шаблоны:</span>
+        <button class="btn" data-preset="official" data-i18n="preset_official">Официальная корзина ИПЦ</button>
+        <button class="btn" data-preset="student" data-i18n="preset_student">Студент</button>
+        <button class="btn" data-preset="family" data-i18n="preset_family">Семья с детьми</button>
+        <button class="btn" data-preset="pensioner" data-i18n="preset_pensioner">Пенсионер</button>
+        <button class="btn primary" id="normBtn" data-i18n="norm_btn">Привести к 100%</button>
       </div>
       <div id="basketRows"></div>
     </div>
     <div class="card">
-      <h3>Ваша корзина и официальная корзина</h3>
-      <div class="flex" style="display:flex;flex-direction:column;gap:8px">
-        <div class="small muted">Вы</div><div class="stack" id="stackYou"></div>
-        <div class="small muted">Официальная корзина</div><div class="stack" id="stackAvg"></div>
+      <h3 data-i18n="cmp_h">Ваша корзина и официальная корзина</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="small muted" data-i18n="you">Вы</div><div class="stack" id="stackYou"></div>
+        <div class="small muted" data-i18n="official_basket">Официальная корзина</div><div class="stack" id="stackAvg"></div>
       </div>
       <div class="legend" id="stackLegend"></div>
     </div>
@@ -193,24 +199,24 @@ a{color:var(--accent)}
   <!-- INFLATION -->
   <section class="panel" id="p-infl" hidden>
     <div class="kpis">
-      <div class="kpi you"><span class="lab">Ваша инфляция, 12 мес</span><span class="val" id="k-you">—</span><span class="note" id="k-you-n"></span></div>
-      <div class="kpi avg"><span class="lab">Официальная корзина, 12 мес</span><span class="val" id="k-avg">—</span><span class="note">веса официальной корзины</span></div>
-      <div class="kpi"><span class="lab">Разница</span><span class="val" id="k-gap">—</span><span class="note">процентные пункты</span></div>
+      <div class="kpi you"><span class="lab" data-i18n="k_you">Ваша инфляция, 12 мес</span><span class="val" id="k-you">—</span><span class="note" id="k-you-n"></span></div>
+      <div class="kpi avg"><span class="lab" data-i18n="k_avg">Официальная корзина, 12 мес</span><span class="val" id="k-avg">—</span><span class="note" data-i18n="k_avg_n">оценка весов ИПЦ 2026</span></div>
+      <div class="kpi"><span class="lab" data-i18n="k_gap">Разница</span><span class="val" id="k-gap">—</span><span class="note" data-i18n="k_gap_n">процентные пункты</span></div>
     </div>
     <div class="card explain" id="ex-infl"></div>
     <div class="card">
-      <h2>Инфляция за 12 месяцев: вы и официальная корзина</h2>
+      <h2 data-i18n="yoy_h">Инфляция за 12 месяцев: вы и официальная корзина</h2>
       <div class="chartbox"><canvas id="chYoy"></canvas></div>
     </div>
     <div class="grid2">
       <div class="card">
-        <h3>Что добавило к вашей инфляции</h3>
-        <p class="muted small">Вклад категории = доля × рост цен в категории. Сумма вкладов равна вашей инфляции.</p>
+        <h3 data-i18n="contrib_h">Что добавило к вашей инфляции</h3>
+        <p class="muted small" data-i18n="contrib_p">Вклад категории = доля × рост цен в категории. Сумма вкладов равна вашей инфляции.</p>
         <div class="bars" id="contribBars"></div>
       </div>
       <div class="card">
-        <h3>Откуда разница с официальной корзиной</h3>
-        <p class="muted small">(ваша доля − официальная доля) × (рост цен категории − официальная инфляция). Сумма равна разнице.</p>
+        <h3 data-i18n="gap_h">Откуда разница с официальной корзиной</h3>
+        <p class="muted small" data-i18n="gap_p">(ваша доля − официальная доля) × (рост цен категории − официальная инфляция). Сумма равна разнице.</p>
         <div class="bars" id="gapBars"></div>
       </div>
     </div>
@@ -219,28 +225,28 @@ a{color:var(--accent)}
   <!-- SALARY -->
   <section class="panel" id="p-salary" hidden>
     <div class="card">
-      <h2>Зарплата и покупательная способность</h2>
+      <h2 data-i18n="sal_h">Зарплата и покупательная способность</h2>
       <div class="fields">
-        <div class="field"><label for="salNow">Зарплата сейчас, сум в месяц</label><input type="text" inputmode="numeric" id="salNow" value="6 000 000"></div>
-        <div class="field"><label for="salPrev">Зарплата 12 месяцев назад, сум</label><input type="text" inputmode="numeric" id="salPrev" value="5 200 000"></div>
-        <div class="field"><label for="spend">Расходы в месяц, сум (необязательно)</label><input type="text" inputmode="numeric" id="spend" value="4 500 000"></div>
+        <div class="field"><label for="salNow" data-i18n="sal_now_l">Зарплата сейчас, сум в месяц</label><input type="text" inputmode="numeric" id="salNow" value="6 000 000"></div>
+        <div class="field"><label for="salPrev" data-i18n="sal_prev_l">Зарплата 12 месяцев назад, сум</label><input type="text" inputmode="numeric" id="salPrev" value="5 200 000"></div>
+        <div class="field"><label for="spend" data-i18n="spend_l">Расходы в месяц, сум (необязательно)</label><input type="text" inputmode="numeric" id="spend" value="4 500 000"></div>
       </div>
-      <p class="privacy">Цифры уже заполнены для примера, впишите свои. Они остаются только в этой вкладке браузера: никуда не отправляются и не сохраняются.</p>
+      <p class="privacy" data-i18n="privacy">Цифры уже заполнены для примера, впишите свои. Они остаются только в этой вкладке браузера: никуда не отправляются и не сохраняются.</p>
     </div>
     <div class="kpis">
-      <div class="kpi"><span class="lab">Рост зарплаты</span><span class="val" id="s-nom">—</span><span class="note">номинальный, за 12 мес</span></div>
-      <div class="kpi you"><span class="lab">Реальный рост</span><span class="val" id="s-real">—</span><span class="note">с учётом вашей инфляции</span></div>
-      <div class="kpi avg"><span class="lab">Реальный рост по официальной</span><span class="val" id="s-real-avg">—</span><span class="note">с учётом официальной инфляции</span></div>
+      <div class="kpi"><span class="lab" data-i18n="s_nom">Рост зарплаты</span><span class="val" id="s-nom">—</span><span class="note" data-i18n="s_nom_n">номинальный, за 12 мес</span></div>
+      <div class="kpi you"><span class="lab" data-i18n="s_real">Реальный рост</span><span class="val" id="s-real">—</span><span class="note" data-i18n="s_real_n">с учётом вашей инфляции</span></div>
+      <div class="kpi avg"><span class="lab" data-i18n="s_real_avg">Реальный рост по официальной</span><span class="val" id="s-real-avg">—</span><span class="note" data-i18n="s_real_avg_n">с учётом официальной инфляции</span></div>
     </div>
     <div class="card explain" id="ex-sal"></div>
     <div class="grid2">
       <div class="card">
-        <h3>Сколько нужно, чтобы покупать столько же</h3>
+        <h3 data-i18n="need_h">Сколько нужно, чтобы покупать столько же</h3>
         <div class="compare" id="salCompare"></div>
         <p class="small muted" id="salNeedNote"></p>
       </div>
       <div class="card">
-        <h3>Ваши расходы и ближайшие месяцы</h3>
+        <h3 data-i18n="spend_h">Ваши расходы и ближайшие месяцы</h3>
         <ul class="plain" id="salList"></ul>
       </div>
     </div>
@@ -249,51 +255,51 @@ a{color:var(--accent)}
   <!-- FORECAST -->
   <section class="panel" id="p-fc" hidden>
     <div class="kpis">
-      <div class="kpi you"><span class="lab">Прогноз на 3 месяца</span><span class="val" id="f-3m">—</span><span class="note" id="f-3m-n"></span></div>
-      <div class="kpi"><span class="lab">Лучший метод</span><span class="val" id="f-best" style="font-size:1.15rem">—</span><span class="note" id="f-best-n"></span></div>
-      <div class="kpi"><span class="lab">Ошибка (MAE)</span><span class="val" id="f-mae">—</span><span class="note">п.п. месячного роста цен, проверка на 12 мес</span></div>
+      <div class="kpi you"><span class="lab" data-i18n="f_3m">Прогноз на 3 месяца</span><span class="val" id="f-3m">—</span><span class="note" id="f-3m-n"></span></div>
+      <div class="kpi"><span class="lab" data-i18n="f_best">Лучший метод</span><span class="val" id="f-best" style="font-size:1.15rem">—</span><span class="note" id="f-best-n"></span></div>
+      <div class="kpi"><span class="lab" data-i18n="f_mae">Ошибка (MAE)</span><span class="val" id="f-mae">—</span><span class="note" data-i18n="f_mae_n">п.п. месячного роста цен, проверка на 12 мес</span></div>
     </div>
     <div class="card">
-      <h2>Индекс вашей корзины и прогноз</h2>
-      <p class="muted small">Индекс: начало данных = 100. Затенённая полоса — 95% диапазон неопределённости по ошибкам модели в прошлом.</p>
+      <h2 data-i18n="fc_h">Индекс вашей корзины и прогноз</h2>
+      <p class="muted small" data-i18n="fc_p">Индекс: начало данных = 100. Затенённая полоса — 95% диапазон неопределённости по ошибкам модели в прошлом.</p>
       <div class="chartbox"><canvas id="chFc"></canvas></div>
     </div>
     <div class="card">
-      <h3>Сравнение методов (walk-forward, 12 последних месяцев, прогноз на 1 месяц)</h3>
+      <h3 data-i18n="fc_tbl_h">Сравнение методов (walk-forward, 12 последних месяцев, прогноз на 1 месяц)</h3>
       <div class="tbl-wrap"><table>
-        <thead><tr><th>Метод</th><th>Как работает</th><th class="n">MAE, п.п.</th><th class="n">RMSE, п.п.</th></tr></thead>
+        <thead><tr><th data-i18n="th_method">Метод</th><th data-i18n="th_how">Как работает</th><th class="n" data-i18n="th_mae">MAE, п.п.</th><th class="n" data-i18n="th_rmse">RMSE, п.п.</th></tr></thead>
         <tbody id="fcTable"></tbody>
       </table></div>
-      <p class="callout">Модели проверяются только на будущих для них месяцах, без случайного перемешивания. Если сложный метод не обыгрывает простой, выбирается простой.</p>
+      <p class="callout" data-i18n="fc_callout">Модели проверяются только на будущих для них месяцах, без случайного перемешивания. Если сложный метод не обыгрывает простой, выбирается простой.</p>
     </div>
   </section>
 
   <!-- SCENARIOS -->
   <section class="panel" id="p-sc" hidden>
     <div class="card">
-      <h2>Лаборатория сценариев</h2>
-      <p class="muted small">Задайте разовый шок и посмотрите, на сколько подорожает ваша корзина. Все допущения видны и меняются в таблице ниже.</p>
+      <h2 data-i18n="sc_h">Лаборатория сценариев</h2>
+      <p class="muted small" data-i18n="sc_p">Задайте разовый шок и посмотрите, на сколько подорожает ваша корзина. Все допущения видны и меняются в таблице ниже.</p>
       <div class="fields">
-        <div class="field"><label for="scFx">Ослабление сума к доллару, %</label><input type="number" id="scFx" value="10" min="0" max="100" step="1"></div>
-        <div class="field"><label for="scUtil">Рост тарифов ЖКУ, %</label><input type="number" id="scUtil" value="0" min="0" max="100" step="1"></div>
-        <div class="field"><label for="scFuel">Рост цен на транспорт и топливо, %</label><input type="number" id="scFuel" value="0" min="0" max="100" step="1"></div>
-        <div class="field"><label for="scFood">Рост цен на продукты, %</label><input type="number" id="scFood" value="0" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scFx" data-i18n="sc_fx">Ослабление сума к доллару, %</label><input type="number" id="scFx" value="10" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scUtil" data-i18n="sc_util">Рост тарифов ЖКУ, %</label><input type="number" id="scUtil" value="0" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scFuel" data-i18n="sc_fuel">Рост цен на транспорт и топливо, %</label><input type="number" id="scFuel" value="0" min="0" max="100" step="1"></div>
+        <div class="field"><label for="scFood" data-i18n="sc_food">Рост цен на продукты, %</label><input type="number" id="scFood" value="0" min="0" max="100" step="1"></div>
       </div>
     </div>
     <div class="kpis">
-      <div class="kpi you"><span class="lab">Ваша корзина</span><span class="val" id="sc-you">—</span><span class="note" id="sc-you-n"></span></div>
-      <div class="kpi avg"><span class="lab">Официальная корзина</span><span class="val" id="sc-avg">—</span><span class="note">тот же шок</span></div>
+      <div class="kpi you"><span class="lab" data-i18n="your_basket">Ваша корзина</span><span class="val" id="sc-you">—</span><span class="note" id="sc-you-n"></span></div>
+      <div class="kpi avg"><span class="lab" data-i18n="official_basket">Официальная корзина</span><span class="val" id="sc-avg">—</span><span class="note" data-i18n="sc_avg_n">тот же шок</span></div>
     </div>
     <div class="card explain" id="ex-sc"></div>
     <div class="grid2">
       <div class="card">
-        <h3>Вклад категорий в рост вашей корзины</h3>
+        <h3 data-i18n="sc_bars_h">Вклад категорий в рост вашей корзины</h3>
         <div class="bars" id="scBars"></div>
       </div>
       <div class="card">
-        <h3>Допущение: перенос курса в цены</h3>
-        <p class="muted small">Какая часть ослабления сума переходит в цены категории. Это условные коэффициенты для демонстрации, их нужно оценить по данным.</p>
-        <div class="tbl-wrap"><table><thead><tr><th>Категория</th><th class="n">Перенос, 0–1</th></tr></thead><tbody id="passTable"></tbody></table></div>
+        <h3 data-i18n="pass_h">Допущение: перенос курса в цены</h3>
+        <p class="muted small" data-i18n="pass_p">Какая часть ослабления сума переходит в цены категории. Это условные коэффициенты для демонстрации, их нужно оценить по данным.</p>
+        <div class="tbl-wrap"><table><thead><tr><th data-i18n="th_cat">Категория</th><th class="n" data-i18n="th_pass">Перенос, 0–1</th></tr></thead><tbody id="passTable"></tbody></table></div>
       </div>
     </div>
   </section>
@@ -301,54 +307,54 @@ a{color:var(--accent)}
   <!-- METHODOLOGY -->
   <section class="panel" id="p-meth" hidden>
     <div class="card">
-      <h2>Как считается личная инфляция</h2>
-      <p>Пользователь задаёт доли расходов wᵢ (в сумме 1). Источник цен — индексы цен по категориям Iᵢ. Личная инфляция за 12 месяцев:</p>
-      <div class="formula">π<sub>личн</sub> = Σ wᵢ × (Iᵢ,ₜ / Iᵢ,ₜ₋₁₂) − 1</div>
-      <p>Индекс корзины для графиков и прогноза (база — первый месяц данных = 100):</p>
+      <h2 data-i18n="m_h1">Как считается личная инфляция</h2>
+      <p data-i18n="m_p1">Пользователь задаёт доли расходов wᵢ (в сумме 1). Источник цен — индексы цен по категориям Iᵢ. Личная инфляция за 12 месяцев:</p>
+      <div class="formula" data-i18n-html="m_f1">π<sub>личн</sub> = Σ wᵢ × (Iᵢ,ₜ / Iᵢ,ₜ₋₁₂) − 1</div>
+      <p data-i18n="m_p2">Индекс корзины для графиков и прогноза (база — первый месяц данных = 100):</p>
       <div class="formula">PPIₜ = 100 × Σ wᵢ × (Iᵢ,ₜ / Iᵢ,₀)</div>
-      <p class="callout">Веса — это доли расходов, поэтому они умножаются на относительное изменение индекса, а не на уровень цены. Формула Σwᵢpᵢ,ₜ / Σwᵢpᵢ,₀ верна только если wᵢ — количества товаров.</p>
-      <p>Реальный рост зарплаты: (1 + рост зарплаты) / (1 + π) − 1.</p>
+      <p class="callout" data-i18n="m_call">Веса — это доли расходов, поэтому они умножаются на относительное изменение индекса, а не на уровень цены. Формула Σwᵢpᵢ,ₜ / Σwᵢpᵢ,₀ верна только если wᵢ — количества товаров.</p>
+      <p data-i18n="m_real">Реальный рост зарплаты: (1 + рост зарплаты) / (1 + π) − 1.</p>
     </div>
     <div class="card">
-      <h2>Данные</h2>
+      <h2 data-i18n="m_data_h">Данные</h2>
       <p id="dataNote"></p>
-      <p>Как построен ряд. Агентство статистики публикует ИПЦ в ежемесячных пресс-релизах, готового ряда для скачивания нет. Уровни индекса посчитаны так (декабрь 2024 = 100):</p>
+      <p data-i18n="m_build">Как построен ряд. Агентство статистики публикует ИПЦ в ежемесячных пресс-релизах, готового ряда для скачивания нет. Уровни индекса посчитаны так (декабрь 2024 = 100):</p>
       <ul class="plain">
-        <li>2026 год: значение «к декабрю 2025» × уровень декабря 2025.</li>
-        <li>Август–декабрь 2025: значение «к декабрю 2024» из релизов за эти месяцы.</li>
-        <li>Январь–июль 2025 и август–ноябрь 2024: уровень того же месяца следующего года ÷ значение «к тому же месяцу прошлого года».</li>
+        <li data-i18n="m_b1">2026 год: значение «к декабрю 2025» × уровень декабря 2025.</li>
+        <li data-i18n="m_b2">Август–декабрь 2025: значение «к декабрю 2024» из релизов за эти месяцы.</li>
+        <li data-i18n="m_b3">Январь–июль 2025 и август–ноябрь 2024: уровень того же месяца следующего года ÷ значение «к тому же месяцу прошлого года».</li>
       </ul>
-      <p>Проверки: цепочка «к предыдущему месяцу» сходится со значениями «к декабрю» во всех релизах (расхождение не больше 0,15 п.п. из-за округления). Август и сентябрь 2025, посчитанные двумя путями, расходятся не больше чем на 0,12 п.п. Сводный ИПЦ, пересчитанный по оценённым весам, отличается от опубликованного не больше чем на 0,1 п.п.</p>
-      <p>Веса официальной корзины Агентство в релизах не публикует. Они оценены из опубликованного вклада разделов в рост ИПЦ за январь–сентябрь 2026: вес = вклад ÷ рост цен раздела. Точность — около ±0,5 п.п. для крупных разделов.</p>
-      <p>Можно загрузить свой CSV в том же формате (например, с новыми месяцами), и все вкладки пересчитаются. Нужно минимум 25 месяцев подряд.</p>
+      <p data-i18n="m_checks">Проверки: цепочка «к предыдущему месяцу» сходится со значениями «к декабрю» во всех релизах (расхождение не больше 0,15 п.п. из-за округления). Август и сентябрь 2025, посчитанные двумя путями, расходятся не больше чем на 0,12 п.п. Сводный ИПЦ, пересчитанный по оценённым весам, отличается от опубликованного не больше чем на 0,1 п.п.</p>
+      <p data-i18n="m_weights">Веса официальной корзины Агентство в релизах не публикует. Они оценены из опубликованного вклада разделов в рост ИПЦ за январь–сентябрь 2026: вес = вклад ÷ рост цен раздела. Точность — около ±0,5 п.п. для крупных разделов.</p>
+      <p data-i18n="m_upload">Можно загрузить свой CSV в том же формате (например, с новыми месяцами), и все вкладки пересчитаются. Нужно минимум 25 месяцев подряд.</p>
       <pre id="csvTpl">month,food,alcohol,clothing,housing,furnishings,health,transport,communication,recreation,education,restaurants,insurance,misc
 2024-12,100,100,100,100,100,100,100,100,100,100,100,100,100
 2025-01,100.9,100.4,100.2,100.1,100.2,100.4,100.5,100.2,100.3,100.1,100.6,100.1,100.4
 ...</pre>
       <div class="btns">
-        <label class="btn primary" for="csvFile" style="display:inline-flex;align-items:center">Загрузить CSV</label>
+        <label class="btn primary" for="csvFile" style="display:inline-flex;align-items:center" data-i18n="btn_csv">Загрузить CSV</label>
         <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
-        <button class="btn" id="demoBtn">Вернуть официальные данные</button>
-        <button class="btn" id="copyTpl">Скопировать шаблон</button>
+        <button class="btn" id="demoBtn" data-i18n="btn_official">Вернуть официальные данные</button>
+        <button class="btn" id="copyTpl" data-i18n="btn_copy">Скопировать шаблон</button>
       </div>
       <p id="csvMsg" aria-live="polite"></p>
     </div>
     <div class="card">
-      <h2>Ограничения</h2>
+      <h2 data-i18n="lim_h">Ограничения</h2>
       <ul class="plain">
-        <li>Индексы взяты из пресс-релизов, где они округлены до 0,1; поэтому месячные изменения в ряду могут отличаться от опубликованных на ±0,1 п.п.</li>
-        <li>В январе 2026 раздел «Страхование и финансовые услуги» вырос примерно на 41% (подорожание автострахования); вес раздела мал, но он заметен на графиках по разделам.</li>
-        <li>Расчёт идёт по категориям, а не по отдельным товарам: внутри категории у разных людей цены меняются по-разному.</li>
-        <li>Доли расходов фиксированы на весь период. Если человек меняет покупки из-за роста цен, реальная инфляция для него чуть ниже.</li>
-        <li>Прогноз — статистическая экстраполяция на 1–3 месяца, не обещание. Диапазон неопределённости показан всегда.</li>
-        <li>Коэффициенты переноса курса в сценариях — условные допущения, их нужно оценить по данным. Шаблоны «Студент», «Семья», «Пенсионер» — примеры, а не статистика.</li>
-        <li>Объяснение собирается по шаблону только из рассчитанных чисел и не даёт финансовых советов. LLM-слой подключается по тем же правилам: модель получает готовые метрики и не меняет их.</li>
+        <li data-i18n="lim1">Индексы взяты из пресс-релизов, где они округлены до 0,1; поэтому месячные изменения в ряду могут отличаться от опубликованных на ±0,1 п.п.</li>
+        <li data-i18n="lim2">В январе 2026 раздел «Страхование и финансовые услуги» вырос примерно на 41% (подорожание автострахования); вес раздела мал, но он заметен на графиках по разделам.</li>
+        <li data-i18n="lim3">Расчёт идёт по категориям, а не по отдельным товарам: внутри категории у разных людей цены меняются по-разному.</li>
+        <li data-i18n="lim4">Доли расходов фиксированы на весь период. Если человек меняет покупки из-за роста цен, реальная инфляция для него чуть ниже.</li>
+        <li data-i18n="lim5">Прогноз — статистическая экстраполяция на 1–3 месяца, не обещание. Диапазон неопределённости показан всегда.</li>
+        <li data-i18n="lim6">Коэффициенты переноса курса в сценариях — условные допущения, их нужно оценить по данным. Шаблоны «Студент», «Семья», «Пенсионер» — примеры, а не статистика.</li>
+        <li data-i18n="lim7">Объяснение по умолчанию собирается по шаблону. Кнопка «Объяснить с ИИ» передаёт Claude только уже посчитанные и отформатированные числа; страница проверяет, что каждое число в ответе есть среди них, иначе ответ отбрасывается. ИИ не даёт финансовых советов.</li>
       </ul>
     </div>
     <div class="card">
-      <h2>Источники</h2>
-      <p class="small muted">Пресс-релизы Агентства статистики при Президенте Республики Узбекистан об индексе потребительских цен:</p>
-      <p class="small"><a href="https://stat.uz/img/news/press-reliz-ipts-za-sentyabr-2026-rus_p67192.pdf" target="_blank" rel="noopener">сентябрь 2026</a> · <a href="https://stat.uz/img/news/press-reliz-ipts-za-avgust-2026-rus_p45617.pdf" target="_blank" rel="noopener">август 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-iyul-2026-rus_p56147.pdf" target="_blank" rel="noopener">июль 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-iyun-2026-rus_p75137.pdf" target="_blank" rel="noopener">июнь 2026</a> · <a href="https://stat.uz/img/news/press-reliz-ipts-za-maj-2026-rus_p45107.pdf" target="_blank" rel="noopener">май 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-aprel-2026-rus_p64552.pdf" target="_blank" rel="noopener">апрель 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-mart-2026-rus_p83831.pdf" target="_blank" rel="noopener">март 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-fevral-2026-rus_p35938.pdf" target="_blank" rel="noopener">февраль 2026</a> · <a href="https://stat.uz/img/news/press-reliz-ipts-za-yanvar-2026-rus_p50697.pdf" target="_blank" rel="noopener">январь 2026</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-dekabr-2025-rus_p27127.pdf" target="_blank" rel="noopener">декабрь 2025</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-noyabr-2025-eng_p62740.pdf" target="_blank" rel="noopener">ноябрь 2025 (EN)</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-oktyabr-2025-rus_p33105.pdf" target="_blank" rel="noopener">октябрь 2025</a> · <a href="https://stat.uz/img/press-relizlar/press-reliz-ipts-za-sentyabr-2025-eng_p86708.pdf" target="_blank" rel="noopener">сентябрь 2025 (EN)</a> · <a href="https://stat.uz/img/press-reliz-ipts-za-avgust-2025-eng_p68314.pdf" target="_blank" rel="noopener">август 2025 (EN)</a></p>
+      <h2 data-i18n="src_h">Источники</h2>
+      <p class="small muted" data-i18n="src_p">Пресс-релизы Агентства статистики при Президенте Республики Узбекистан об индексе потребительских цен:</p>
+      <p class="small" id="srcLinks"></p>
     </div>
   </section>
 </div>
@@ -389,7 +395,7 @@ function save(k,v){try{localStorage.setItem('econolens:'+k,JSON.stringify(v))}ca
    Levels: Dec 2024 = 100. Built from "к декабрю прошлого года" and "к тому же месяцу прошлого года"
    columns of releases Aug 2025 – Sep 2026 (see Methodology tab). */
 const OFFICIAL={months:["2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"],idx:{food:[94.925, 96.223, 97.164, 98.202, 100.0, 100.8, 101.415, 102.902, 103.705, 102.73, 101.529, 100.348, 101.0, 101.9, 102.8, 103.8, 105.4, 106.243, 107.297, 108.562, 109.616, 109.511, 107.824, 106.77, 107.192, 108.351],alcohol:[96.307, 97.217, 98.503, 99.436, 100.0, 100.495, 100.981, 101.186, 102.215, 103.297, 103.6, 103.811, 104.3, 104.8, 105.3, 105.8, 106.1, 106.524, 106.737, 107.055, 108.859, 109.495, 109.92, 110.662, 111.299, 111.723],clothing:[97.22, 97.598, 98.168, 99.322, 100.0, 100.396, 100.594, 100.698, 100.998, 101.103, 101.204, 101.304, 101.4, 101.6, 101.8, 102.6, 102.7, 102.905, 103.008, 103.316, 103.624, 104.035, 104.241, 104.343, 104.446, 104.651],housing:[98.46, 98.887, 99.146, 99.829, 100.0, 100.286, 100.357, 100.656, 101.214, 112.033, 113.176, 114.804, 115.1, 115.5, 116.1, 116.8, 117.1, 117.334, 117.92, 118.271, 118.622, 119.091, 128.342, 128.81, 128.81, 129.161],furnishings:[97.321, 98.075, 98.549, 99.416, 100.0, 100.498, 100.602, 100.901, 101.2, 101.402, 101.502, 101.603, 101.7, 101.9, 101.9, 102.2, 102.3, 102.709, 103.016, 103.323, 103.528, 103.937, 104.141, 104.346, 104.448, 104.858],health:[96.136, 97.398, 98.5, 99.34, 100.0, 100.882, 101.585, 101.7, 103.071, 103.368, 104.071, 104.176, 104.5, 104.8, 105.1, 105.4, 105.6, 106.128, 106.867, 107.395, 107.606, 107.606, 107.818, 108.134, 108.029, 108.24],transport:[96.238, 97.186, 97.793, 99.197, 100.0, 100.211, 101.8, 102.243, 103.22, 108.681, 108.959, 109.595, 110.0, 110.5, 110.8, 111.2, 112.0, 112.336, 112.896, 112.672, 113.232, 113.68, 116.368, 117.376, 117.824, 118.496],communication:[98.14, 98.329, 100.0, 99.906, 100.0, 99.998, 100.287, 102.043, 103.481, 105.163, 105.273, 105.41, 105.5, 105.9, 105.9, 106.1, 108.9, 110.098, 110.316, 110.207, 110.207, 110.316, 110.642, 111.84, 111.731, 111.949],recreation:[96.406, 97.493, 98.594, 99.434, 100.0, 100.786, 101.179, 101.577, 102.066, 102.767, 103.169, 103.671, 104.6, 105.0, 105.2, 105.5, 105.7, 106.228, 106.44, 106.757, 106.863, 107.391, 107.708, 108.025, 108.237, 108.66],education:[91.806, 98.678, 99.336, 99.62, 100.0, 103.548, 103.652, 103.653, 103.653, 103.757, 103.859, 103.962, 104.2, 104.5, 104.8, 104.9, 105.1, 105.205, 105.31, 105.415, 105.415, 105.52, 105.52, 105.625, 105.731, 110.145],restaurants:[95.098, 97.187, 98.175, 99.357, 100.0, 100.886, 101.487, 102.383, 103.4, 104.481, 105.376, 105.875, 106.7, 107.1, 107.6, 108.2, 108.6, 109.36, 110.012, 110.881, 112.292, 112.944, 113.596, 113.921, 114.356, 115.116],insurance:[99.503, 99.6, 99.799, 99.798, 100.0, 100.27, 100.34, 100.055, 100.193, 100.192, 99.423, 99.908, 100.1, 99.7, 99.4, 98.8, 99.7, 140.378, 140.776, 140.477, 141.973, 142.072, 143.169, 143.468, 143.269, 143.468],misc:[95.414, 96.296, 97.818, 98.991, 100.0, 101.194, 101.888, 102.77, 103.478, 104.271, 104.771, 105.273, 106.1, 106.6, 107.6, 107.9, 108.2, 109.39, 110.039, 110.58, 111.446, 111.987, 112.42, 112.853, 113.069, 113.61]}};
-function officialData(){return {months:OFFICIAL.months.slice(),idx:JSON.parse(JSON.stringify(OFFICIAL.idx)),source:'stat',name:'Агентство статистики'}}
+function officialData(){return {months:OFFICIAL.months.slice(),idx:JSON.parse(JSON.stringify(OFFICIAL.idx)),source:'stat',name:'stat.uz'}}
 /* ---------- state ---------- */
 let D=officialData();
 let W=load('weights13',null)||Object.assign({},PRESETS.official);
@@ -399,17 +405,30 @@ let TAB=load('tab','basket');
 let PASS=load('pass13',null)||Object.fromEntries(CATS.map(c=>[c.id,c.pass]));
 const charts={};
 
+/* ---------- interface language ---------- */
+const I18N={"ru": {"sub": "Личная инфляция и покупательная способность", "lang_aria": "Язык", "tab_basket": "Корзина", "tab_infl": "Моя инфляция", "tab_salary": "Зарплата", "tab_fc": "Прогноз", "tab_sc": "Сценарии", "tab_meth": "Методология и данные", "basket_h": "Ваша корзина расходов", "basket_p": "Укажите, какую долю месячных расходов занимает каждая категория. Точные суммы не нужны.", "sum_label": "Сумма: {v}%", "sum_norm": " · расчёт нормирует доли", "presets": "Шаблоны:", "preset_official": "Официальная корзина ИПЦ", "preset_student": "Студент", "preset_family": "Семья с детьми", "preset_pensioner": "Пенсионер", "norm_btn": "Привести к 100%", "cmp_h": "Ваша корзина и официальная корзина", "you": "Вы", "official_basket": "Официальная корзина", "your_basket": "Ваша корзина", "share_aria": "{c}, доля", "k_you": "Ваша инфляция, 12 мес", "k_avg": "Официальная корзина, 12 мес", "k_avg_n": "оценка весов ИПЦ 2026", "k_gap": "Разница", "k_gap_n": "процентные пункты", "pp_unit": "п.п.", "yoy_h": "Инфляция за 12 месяцев: вы и официальная корзина", "contrib_h": "Что добавило к вашей инфляции", "contrib_p": "Вклад категории = доля × рост цен в категории. Сумма вкладов равна вашей инфляции.", "gap_h": "Откуда разница с официальной корзиной", "gap_p": "(ваша доля − официальная доля) × (рост цен категории − официальная инфляция). Сумма равна разнице.", "sal_h": "Зарплата и покупательная способность", "sal_now_l": "Зарплата сейчас, сум в месяц", "sal_prev_l": "Зарплата 12 месяцев назад, сум", "spend_l": "Расходы в месяц, сум (необязательно)", "privacy": "Цифры уже заполнены для примера, впишите свои. Они остаются только в этой вкладке браузера: никуда не отправляются и не сохраняются.", "s_nom": "Рост зарплаты", "s_nom_n": "номинальный, за 12 мес", "s_real": "Реальный рост", "s_real_n": "с учётом вашей инфляции", "s_real_avg": "Реальный рост по официальной", "s_real_avg_n": "с учётом официальной инфляции", "need_h": "Сколько нужно, чтобы покупать столько же", "spend_h": "Ваши расходы и ближайшие месяцы", "c_prev": "Зарплата год назад", "c_need": "Нужно сейчас по вашей инфляции", "c_need_avg": "Нужно сейчас по официальной инфляции", "c_now": "Ваша зарплата сейчас", "need_ok": "Зарплата покрывает рост цен вашей корзины с запасом {v} в месяц.", "need_bad": "До уровня прошлого года не хватает {v} в месяц.", "enter_both": "Введите зарплату сейчас и год назад.", "li_old": "Те же покупки год назад стоили около <b class=\"mono\">{old}</b>. Сейчас вы платите за них на <b class=\"mono\">{extra}</b> в месяц больше, это около <b class=\"mono\">{year}</b> в год.", "li_share": "Расходы составляют <b class=\"mono\">{p}</b> зарплаты; остаётся <b class=\"mono\">{rest}</b>.", "li_nospend": "Укажите месячные расходы, чтобы увидеть, сколько вы доплачиваете за ту же корзину.", "li_fc": "Если зарплата не изменится, через 3 месяца её покупательная способность может снизиться примерно на <b class=\"mono\">{p}</b> (диапазон {lo} … {hi}), то есть на <b class=\"mono\">{v}</b> в ценах сегодняшнего дня.", "f_3m": "Прогноз на 3 месяца", "f_3m_n": "рост индекса корзины к {m}; 95%: {lo} … {hi}", "f_best": "Лучший метод", "f_best_naive": "простой метод оказался лучшим", "f_best_better": "лучше наивного на {p}% по MAE", "f_mae": "Ошибка (MAE)", "f_mae_n": "п.п. месячного роста цен, проверка на 12 мес", "fc_h": "Индекс вашей корзины и прогноз", "fc_p": "Индекс: начало данных = 100. Затенённая полоса — 95% диапазон неопределённости по ошибкам модели в прошлом.", "fc_tbl_h": "Сравнение методов (walk-forward, 12 последних месяцев, прогноз на 1 месяц)", "th_method": "Метод", "th_how": "Как работает", "th_mae": "MAE, п.п.", "th_rmse": "RMSE, п.п.", "fc_callout": "Модели проверяются только на будущих для них месяцах, без случайного перемешивания. Если сложный метод не обыгрывает простой, выбирается простой.", "m_naive": "Наивный", "h_naive": "следующий месяц = прошлый месяц", "m_snaive": "Сезонный наивный", "h_snaive": "как в том же месяце год назад", "m_ma12": "Среднее за 12 мес", "h_ma12": "средний месячный рост за год", "m_blend": "Сезонность + тренд", "h_blend": "сезонный профиль + сдвиг уровня за год", "ser_index": "Индекс корзины", "ser_fc": "Прогноз", "sc_h": "Лаборатория сценариев", "sc_p": "Задайте разовый шок и посмотрите, на сколько подорожает ваша корзина. Все допущения видны и меняются в таблице ниже.", "sc_fx": "Ослабление сума к доллару, %", "sc_util": "Рост тарифов ЖКУ, %", "sc_fuel": "Рост цен на транспорт и топливо, %", "sc_food": "Рост цен на продукты, %", "sc_avg_n": "тот же шок", "sc_you_spend": "≈ {v} в месяц к вашим расходам", "sc_you_once": "разовый рост стоимости корзины", "sc_bars_h": "Вклад категорий в рост вашей корзины", "pass_h": "Допущение: перенос курса в цены", "pass_p": "Какая часть ослабления сума переходит в цены категории. Это условные коэффициенты для демонстрации, их нужно оценить по данным.", "th_cat": "Категория", "th_pass": "Перенос, 0–1", "pass_aria": "Перенос курса: {c}", "m_h1": "Как считается личная инфляция", "m_p1": "Пользователь задаёт доли расходов wᵢ (в сумме 1). Источник цен — индексы цен по категориям Iᵢ. Личная инфляция за 12 месяцев:", "m_f1": "π<sub>личн</sub> = Σ wᵢ × (Iᵢ,ₜ / Iᵢ,ₜ₋₁₂) − 1", "m_p2": "Индекс корзины для графиков и прогноза (база — первый месяц данных = 100):", "m_call": "Веса — это доли расходов, поэтому они умножаются на относительное изменение индекса, а не на уровень цены. Формула Σwᵢpᵢ,ₜ / Σwᵢpᵢ,₀ верна только если wᵢ — количества товаров.", "m_real": "Реальный рост зарплаты: (1 + рост зарплаты) / (1 + π) − 1.", "m_data_h": "Данные", "data_stat": "Загружены официальные индексы цен по 13 разделам классификации КИПЦ РУ 2018: {n} месяцев ({a} – {b}), декабрь 2024 = 100.", "data_file": "Загружен файл «{f}»: {n} месяцев ({a} – {b}).", "m_build": "Как построен ряд. Агентство статистики публикует ИПЦ в ежемесячных пресс-релизах, готового ряда для скачивания нет. Уровни индекса посчитаны так (декабрь 2024 = 100):", "m_b1": "2026 год: значение «к декабрю 2025» × уровень декабря 2025.", "m_b2": "Август–декабрь 2025: значение «к декабрю 2024» из релизов за эти месяцы.", "m_b3": "Январь–июль 2025 и август–ноябрь 2024: уровень того же месяца следующего года ÷ значение «к тому же месяцу прошлого года».", "m_checks": "Проверки: цепочка «к предыдущему месяцу» сходится со значениями «к декабрю» во всех релизах (расхождение не больше 0,15 п.п. из-за округления). Август и сентябрь 2025, посчитанные двумя путями, расходятся не больше чем на 0,12 п.п. Сводный ИПЦ, пересчитанный по оценённым весам, отличается от опубликованного не больше чем на 0,1 п.п.", "m_weights": "Веса официальной корзины Агентство в релизах не публикует. Они оценены из опубликованного вклада разделов в рост ИПЦ за январь–сентябрь 2026: вес = вклад ÷ рост цен раздела. Точность — около ±0,5 п.п. для крупных разделов.", "m_upload": "Можно загрузить свой CSV в том же формате (например, с новыми месяцами), и все вкладки пересчитаются. Нужно минимум 25 месяцев подряд.", "btn_csv": "Загрузить CSV", "btn_official": "Вернуть официальные данные", "btn_copy": "Скопировать шаблон", "lim_h": "Ограничения", "lim1": "Индексы взяты из пресс-релизов, где они округлены до 0,1; поэтому месячные изменения в ряду могут отличаться от опубликованных на ±0,1 п.п.", "lim2": "В январе 2026 раздел «Страхование и финансовые услуги» вырос примерно на 41% (подорожание автострахования); вес раздела мал, но он заметен на графиках по разделам.", "lim3": "Расчёт идёт по категориям, а не по отдельным товарам: внутри категории у разных людей цены меняются по-разному.", "lim4": "Доли расходов фиксированы на весь период. Если человек меняет покупки из-за роста цен, реальная инфляция для него чуть ниже.", "lim5": "Прогноз — статистическая экстраполяция на 1–3 месяца, не обещание. Диапазон неопределённости показан всегда.", "lim6": "Коэффициенты переноса курса в сценариях — условные допущения, их нужно оценить по данным. Шаблоны «Студент», «Семья», «Пенсионер» — примеры, а не статистика.", "lim7": "Объяснение по умолчанию собирается по шаблону. Кнопка «Объяснить с ИИ» передаёт Claude только уже посчитанные и отформатированные числа; страница проверяет, что каждое число в ответе есть среди них, иначе ответ отбрасывается. ИИ не даёт финансовых советов.", "src_h": "Источники", "src_p": "Пресс-релизы Агентства статистики при Президенте Республики Узбекистан об индексе потребительских цен:", "src_chip": "Данные: Агентство статистики", "src_file": "Данные: {f}", "last_chip": "данные по {m}", "csv_loaded": "Загружено: {n} месяцев. Все вкладки пересчитаны по вашему файлу.", "csv_readerr": "Не удалось прочитать файл. Попробуйте сохранить его как CSV в кодировке UTF-8.", "csv_restored": "Возвращены официальные данные.", "csv_copied": "Строка заголовков скопирована.", "csv_selected": "Шаблон выделен, скопируйте его вручную.", "e_empty": "В файле нет строк с данными.", "e_first": "Первый столбец должен называться month.", "e_missing": "Не хватает столбцов: {c}.", "e_month": "Строка {r}: месяц должен быть в формате ГГГГ-ММ, сейчас «{m}».", "e_num": "Строка {r}, столбец {c}: нужно положительное число.", "e_gap": "Месяцы должны идти подряд без пропусков: после {a} идёт {b}.", "e_min": "Нужно минимум 25 месяцев, в файле {n}.", "chart_fail": "График не загрузился. Числа выше рассчитаны и без него."}, "uz": {"sub": "Shaxsiy inflyatsiya va xarid qobiliyati", "lang_aria": "Til", "tab_basket": "Savat", "tab_infl": "Mening inflyatsiyam", "tab_salary": "Maosh", "tab_fc": "Prognoz", "tab_sc": "Ssenariylar", "tab_meth": "Metodologiya va ma’lumotlar", "basket_h": "Xarajatlar savatingiz", "basket_p": "Har bir toifa oylik xarajatlaringizning qancha qismini tashkil etishini belgilang. Aniq summalar shart emas.", "sum_label": "Jami: {v}%", "sum_norm": " · hisobda ulushlar 100% ga keltiriladi", "presets": "Namunalar:", "preset_official": "Rasmiy INI savati", "preset_student": "Talaba", "preset_family": "Bolali oila", "preset_pensioner": "Nafaqaxo‘r", "norm_btn": "100% ga keltirish", "cmp_h": "Sizning savatingiz va rasmiy savat", "you": "Siz", "official_basket": "Rasmiy savat", "your_basket": "Sizning savatingiz", "share_aria": "{c}, ulush", "k_you": "Sizning inflyatsiyangiz, 12 oy", "k_avg": "Rasmiy savat, 12 oy", "k_avg_n": "2026 yil INI vaznlari bahosi", "k_gap": "Farq", "k_gap_n": "foiz punktlari", "pp_unit": "f.p.", "yoy_h": "12 oylik inflyatsiya: siz va rasmiy savat", "contrib_h": "Inflyatsiyangizga nima qo‘shildi", "contrib_p": "Toifa hissasi = ulush × toifadagi narx o‘sishi. Hissalar yig‘indisi inflyatsiyangizga teng.", "gap_h": "Rasmiy savatdan farq qayerdan kelib chiqadi", "gap_p": "(sizning ulushingiz − rasmiy ulush) × (toifa narxlari o‘sishi − rasmiy inflyatsiya). Yig‘indisi farqqa teng.", "sal_h": "Maosh va xarid qobiliyati", "sal_now_l": "Hozirgi maosh, oyiga so‘m", "sal_prev_l": "12 oy oldingi maosh, so‘m", "spend_l": "Oylik xarajatlar, so‘m (ixtiyoriy)", "privacy": "Raqamlar namuna sifatida to‘ldirilgan, o‘zingiznikini kiriting. Ular faqat brauzerning shu oynasida qoladi: hech qayerga yuborilmaydi va saqlanmaydi.", "s_nom": "Maosh o‘sishi", "s_nom_n": "nominal, 12 oyda", "s_real": "Real o‘sish", "s_real_n": "sizning inflyatsiyangiz hisobga olingan", "s_real_avg": "Rasmiy bo‘yicha real o‘sish", "s_real_avg_n": "rasmiy inflyatsiya hisobga olingan", "need_h": "Avvalgidek xarid qilish uchun qancha kerak", "spend_h": "Xarajatlaringiz va yaqin oylar", "c_prev": "Bir yil oldingi maosh", "c_need": "Sizning inflyatsiyangiz bo‘yicha hozir kerak", "c_need_avg": "Rasmiy inflyatsiya bo‘yicha hozir kerak", "c_now": "Hozirgi maoshingiz", "need_ok": "Maoshingiz savatingiz narxlari o‘sishini oyiga {v} zaxira bilan qoplaydi.", "need_bad": "O‘tgan yil darajasiga yetish uchun oyiga {v} yetmaydi.", "enter_both": "Hozirgi va bir yil oldingi maoshni kiriting.", "li_old": "Xuddi shu xaridlar bir yil oldin taxminan <b class=\"mono\">{old}</b> turardi. Hozir ular uchun oyiga <b class=\"mono\">{extra}</b> ko‘proq to‘laysiz, bu yiliga taxminan <b class=\"mono\">{year}</b>.", "li_share": "Xarajatlar maoshning <b class=\"mono\">{p}</b> qismini tashkil etadi; <b class=\"mono\">{rest}</b> qoladi.", "li_nospend": "Xuddi shu savat uchun qancha ortiqcha to‘layotganingizni ko‘rish uchun oylik xarajatlarni kiriting.", "li_fc": "Agar maosh o‘zgarmasa, 3 oydan keyin uning xarid qobiliyati taxminan <b class=\"mono\">{p}</b> ga (oraliq {lo} … {hi}), ya’ni bugungi narxlarda <b class=\"mono\">{v}</b> ga kamayishi mumkin.", "f_3m": "3 oylik prognoz", "f_3m_n": "{m} gacha savat indeksi o‘sishi; 95%: {lo} … {hi}", "f_best": "Eng yaxshi usul", "f_best_naive": "eng oddiy usul eng yaxshi chiqdi", "f_best_better": "MAE bo‘yicha sodda usuldan {p}% yaxshiroq", "f_mae": "Xato (MAE)", "f_mae_n": "oylik narx o‘sishining f.p., 12 oyda tekshirilgan", "fc_h": "Savatingiz indeksi va prognoz", "fc_p": "Indeks: ma’lumotlar boshi = 100. Soyali chiziq — modelning o‘tmishdagi xatolari asosidagi 95% noaniqlik oralig‘i.", "fc_tbl_h": "Usullarni taqqoslash (walk-forward, oxirgi 12 oy, 1 oylik prognoz)", "th_method": "Usul", "th_how": "Qanday ishlaydi", "th_mae": "MAE, f.p.", "th_rmse": "RMSE, f.p.", "fc_callout": "Modellar faqat ular uchun kelajak bo‘lgan oylarda, tasodifiy aralashtirishsiz tekshiriladi. Murakkab usul oddiysidan yaxshi bo‘lmasa, oddiysi tanlanadi.", "m_naive": "Sodda", "h_naive": "keyingi oy = o‘tgan oy", "m_snaive": "Mavsumiy sodda", "h_snaive": "bir yil oldingi shu oydagidek", "m_ma12": "12 oylik o‘rtacha", "h_ma12": "yil davomidagi o‘rtacha oylik o‘sish", "m_blend": "Mavsumiylik + trend", "h_blend": "mavsumiy profil + yillik daraja siljishi", "ser_index": "Savat indeksi", "ser_fc": "Prognoz", "sc_h": "Ssenariylar laboratoriyasi", "sc_p": "Bir martalik zarbani belgilang va savatingiz qanchaga qimmatlashini ko‘ring. Barcha farazlar quyidagi jadvalda ko‘rinadi va o‘zgartiriladi.", "sc_fx": "So‘mning dollarga nisbatan qadrsizlanishi, %", "sc_util": "Kommunal tariflar o‘sishi, %", "sc_fuel": "Transport va yoqilg‘i narxlari o‘sishi, %", "sc_food": "Oziq-ovqat narxlari o‘sishi, %", "sc_avg_n": "xuddi shu zarba", "sc_you_spend": "xarajatlaringizga oyiga ≈ {v}", "sc_you_once": "savat narxining bir martalik o‘sishi", "sc_bars_h": "Savatingiz o‘sishiga toifalar hissasi", "pass_h": "Faraz: kursning narxlarga o‘tishi", "pass_p": "So‘m qadrsizlanishining qancha qismi toifa narxlariga o‘tadi. Bu namoyish uchun shartli koeffitsiyentlar, ularni ma’lumotlar asosida baholash kerak.", "th_cat": "Toifa", "th_pass": "O‘tish, 0–1", "pass_aria": "Kurs o‘tishi: {c}", "m_h1": "Shaxsiy inflyatsiya qanday hisoblanadi", "m_p1": "Foydalanuvchi xarajat ulushlarini wᵢ belgilaydi (jami 1). Narxlar manbai — toifalar bo‘yicha narx indekslari Iᵢ. 12 oylik shaxsiy inflyatsiya:", "m_f1": "π<sub>shaxsiy</sub> = Σ wᵢ × (Iᵢ,ₜ / Iᵢ,ₜ₋₁₂) − 1", "m_p2": "Grafiklar va prognoz uchun savat indeksi (baza — ma’lumotlarning birinchi oyi = 100):", "m_call": "Vaznlar — bu xarajat ulushlari, shuning uchun ular narx darajasiga emas, indeksning nisbiy o‘zgarishiga ko‘paytiriladi. Σwᵢpᵢ,ₜ / Σwᵢpᵢ,₀ formulasi faqat wᵢ tovarlar miqdori bo‘lganda to‘g‘ri.", "m_real": "Maoshning real o‘sishi: (1 + maosh o‘sishi) / (1 + π) − 1.", "m_data_h": "Ma’lumotlar", "data_stat": "KIPC RU 2018 tasnifining 13 bo‘limi bo‘yicha rasmiy narx indekslari yuklangan: {n} oy ({a} – {b}), 2024 yil dekabr = 100.", "data_file": "«{f}» fayli yuklandi: {n} oy ({a} – {b}).", "m_build": "Qator qanday tuzilgan. Statistika agentligi INIni oylik press-relizlarda e’lon qiladi, yuklab olish uchun tayyor qator yo‘q. Indeks darajalari quyidagicha hisoblangan (2024 yil dekabr = 100):", "m_b1": "2026 yil: «2025 yil dekabriga nisbatan» qiymati × 2025 yil dekabr darajasi.", "m_b2": "2025 yil avgust–dekabr: shu oylar relizlaridagi «2024 yil dekabriga nisbatan» qiymati.", "m_b3": "2025 yil yanvar–iyul va 2024 yil avgust–noyabr: keyingi yilning shu oyi darajasi ÷ «o‘tgan yilning shu oyiga nisbatan» qiymati.", "m_checks": "Tekshiruvlar: «oldingi oyga nisbatan» zanjiri barcha relizlarda «dekabrga nisbatan» qiymatlari bilan mos keladi (yaxlitlash tufayli farq 0,15 f.p. dan oshmaydi). Ikki usulda hisoblangan 2025 yil avgust va sentyabr 0,12 f.p. dan ko‘p farq qilmaydi. Baholangan vaznlar bo‘yicha qayta hisoblangan umumiy INI e’lon qilinganidan 0,1 f.p. dan ko‘p farq qilmaydi.", "m_weights": "Rasmiy savat vaznlarini Agentlik relizlarda e’lon qilmaydi. Ular bo‘limlarning 2026 yil yanvar–sentyabrdagi INI o‘sishiga e’lon qilingan hissasidan baholangan: vazn = hissa ÷ bo‘lim narxlari o‘sishi. Aniqlik yirik bo‘limlar uchun taxminan ±0,5 f.p.", "m_upload": "O‘z CSV faylingizni xuddi shu formatda yuklashingiz mumkin (masalan, yangi oylar bilan), barcha bo‘limlar qayta hisoblanadi. Kamida ketma-ket 25 oy kerak.", "btn_csv": "CSV yuklash", "btn_official": "Rasmiy ma’lumotlarni qaytarish", "btn_copy": "Shablonni nusxalash", "lim_h": "Cheklovlar", "lim1": "Indekslar 0,1 gacha yaxlitlangan press-relizlardan olingan, shuning uchun qatordagi oylik o‘zgarishlar e’lon qilinganidan ±0,1 f.p. farq qilishi mumkin.", "lim2": "2026 yil yanvarda «Sug‘urta va moliyaviy xizmatlar» bo‘limi taxminan 41% ga oshdi (avtosug‘urta qimmatlashdi); bo‘lim vazni kichik, lekin bo‘limlar grafiklarida sezilarli.", "lim3": "Hisob alohida tovarlar emas, toifalar bo‘yicha olib boriladi: bir toifa ichida turli odamlar uchun narxlar turlicha o‘zgaradi.", "lim4": "Xarajat ulushlari butun davr uchun o‘zgarmas. Agar odam narxlar o‘sishi sababli xaridlarini o‘zgartirsa, uning uchun real inflyatsiya biroz pastroq bo‘ladi.", "lim5": "Prognoz — 1–3 oyga statistik ekstrapolyatsiya, va’da emas. Noaniqlik oralig‘i doim ko‘rsatiladi.", "lim6": "Ssenariylardagi kurs o‘tishi koeffitsiyentlari shartli farazlar, ularni ma’lumotlar asosida baholash kerak. «Talaba», «Oila», «Nafaqaxo‘r» namunalari statistika emas, misol.", "lim7": "Izoh odatda shablon bo‘yicha tuziladi. «AI bilan tushuntirish» tugmasi Claude’ga faqat hisoblangan va formatlangan raqamlarni yuboradi; sahifa javobdagi har bir raqam ular orasida borligini tekshiradi, aks holda javob rad etiladi. AI moliyaviy maslahat bermaydi.", "src_h": "Manbalar", "src_p": "O‘zbekiston Respublikasi Prezidenti huzuridagi Statistika agentligining iste’mol narxlari indeksi bo‘yicha press-relizlari:", "src_chip": "Ma’lumotlar: Statistika agentligi", "src_file": "Ma’lumotlar: {f}", "last_chip": "{m} gacha ma’lumot", "csv_loaded": "Yuklandi: {n} oy. Barcha bo‘limlar faylingiz bo‘yicha qayta hisoblandi.", "csv_readerr": "Faylni o‘qib bo‘lmadi. Uni UTF-8 kodlashdagi CSV sifatida saqlab ko‘ring.", "csv_restored": "Rasmiy ma’lumotlar qaytarildi.", "csv_copied": "Sarlavha qatori nusxalandi.", "csv_selected": "Shablon belgilandi, uni qo‘lda nusxalang.", "e_empty": "Faylda ma’lumotli qatorlar yo‘q.", "e_first": "Birinchi ustun month deb nomlanishi kerak.", "e_missing": "Ustunlar yetishmaydi: {c}.", "e_month": "{r}-qator: oy YYYY-MM formatida bo‘lishi kerak, hozir «{m}».", "e_num": "{r}-qator, {c} ustuni: musbat son kerak.", "e_gap": "Oylar uzilishsiz ketma-ket bo‘lishi kerak: {a} dan keyin {b} keladi.", "e_min": "Kamida 25 oy kerak, faylda {n}.", "chart_fail": "Grafik yuklanmadi. Yuqoridagi raqamlar usiz ham hisoblangan."}, "en": {"sub": "Personal inflation and purchasing power", "lang_aria": "Language", "tab_basket": "Basket", "tab_infl": "My inflation", "tab_salary": "Salary", "tab_fc": "Forecast", "tab_sc": "Scenarios", "tab_meth": "Methodology & data", "basket_h": "Your spending basket", "basket_p": "Set what share of your monthly spending goes to each category. Exact amounts are not needed.", "sum_label": "Total: {v}%", "sum_norm": " · shares are rescaled in the calculation", "presets": "Examples:", "preset_official": "Official CPI basket", "preset_student": "Student", "preset_family": "Family with children", "preset_pensioner": "Pensioner", "norm_btn": "Scale to 100%", "cmp_h": "Your basket and the official basket", "you": "You", "official_basket": "Official basket", "your_basket": "Your basket", "share_aria": "{c}, share", "k_you": "Your inflation, 12 months", "k_avg": "Official basket, 12 months", "k_avg_n": "estimated 2026 CPI weights", "k_gap": "Difference", "k_gap_n": "percentage points", "pp_unit": "pp", "yoy_h": "12-month inflation: you and the official basket", "contrib_h": "What added to your inflation", "contrib_p": "Category contribution = share × price change in the category. The contributions add up to your inflation.", "gap_h": "Where the gap with the official basket comes from", "gap_p": "(your share − official share) × (category price change − official inflation). These add up to the gap.", "sal_h": "Salary and purchasing power", "sal_now_l": "Salary now, UZS per month", "sal_prev_l": "Salary 12 months ago, UZS", "spend_l": "Monthly spending, UZS (optional)", "privacy": "The numbers are filled in as an example; enter your own. They stay in this browser tab only: nothing is sent or saved.", "s_nom": "Salary growth", "s_nom_n": "nominal, over 12 months", "s_real": "Real growth", "s_real_n": "adjusted for your inflation", "s_real_avg": "Real growth, official", "s_real_avg_n": "adjusted for official inflation", "need_h": "What you need to buy as much as before", "spend_h": "Your spending and the coming months", "c_prev": "Salary a year ago", "c_need": "Needed now, your inflation", "c_need_avg": "Needed now, official inflation", "c_now": "Your salary now", "need_ok": "Your salary covers the price rise of your basket with {v} a month to spare.", "need_bad": "You are {v} a month short of last year’s level.", "enter_both": "Enter your salary now and a year ago.", "li_old": "The same purchases cost about <b class=\"mono\">{old}</b> a year ago. Now you pay <b class=\"mono\">{extra}</b> more for them each month, about <b class=\"mono\">{year}</b> a year.", "li_share": "Spending is <b class=\"mono\">{p}</b> of your salary; <b class=\"mono\">{rest}</b> is left.", "li_nospend": "Enter your monthly spending to see how much extra you pay for the same basket.", "li_fc": "If your salary stays the same, its purchasing power may fall by about <b class=\"mono\">{p}</b> in 3 months (range {lo} … {hi}), that is <b class=\"mono\">{v}</b> in today’s prices.", "f_3m": "3-month forecast", "f_3m_n": "basket index change by {m}; 95%: {lo} … {hi}", "f_best": "Best method", "f_best_naive": "the simplest method came out best", "f_best_better": "{p}% better than naive by MAE", "f_mae": "Error (MAE)", "f_mae_n": "pp of monthly price change, tested on 12 months", "fc_h": "Your basket index and forecast", "fc_p": "Index: start of data = 100. The shaded band is the 95% uncertainty range based on the model’s past errors.", "fc_tbl_h": "Method comparison (walk-forward, last 12 months, 1 month ahead)", "th_method": "Method", "th_how": "How it works", "th_mae": "MAE, pp", "th_rmse": "RMSE, pp", "fc_callout": "Models are tested only on months that lie in their future, with no random shuffling. If a complex method does not beat a simple one, the simple one is chosen.", "m_naive": "Naive", "h_naive": "next month = last month", "m_snaive": "Seasonal naive", "h_snaive": "same month one year ago", "m_ma12": "12-month mean", "h_ma12": "average monthly change over a year", "m_blend": "Seasonality + trend", "h_blend": "seasonal profile + year-on-year level shift", "ser_index": "Basket index", "ser_fc": "Forecast", "sc_h": "Scenario lab", "sc_p": "Set a one-off shock and see how much more your basket would cost. All assumptions are visible and editable in the table below.", "sc_fx": "Som depreciation against the dollar, %", "sc_util": "Utility tariff increase, %", "sc_fuel": "Transport and fuel price increase, %", "sc_food": "Food price increase, %", "sc_avg_n": "same shock", "sc_you_spend": "≈ {v} a month added to your spending", "sc_you_once": "one-off rise in basket cost", "sc_bars_h": "Category contributions to your basket’s rise", "pass_h": "Assumption: exchange-rate pass-through", "pass_p": "How much of the som’s depreciation passes into each category’s prices. These are illustrative coefficients that still need to be estimated from data.", "th_cat": "Category", "th_pass": "Pass-through, 0–1", "pass_aria": "Pass-through: {c}", "m_h1": "How personal inflation is calculated", "m_p1": "The user sets spending shares wᵢ (summing to 1). Prices come from category price indices Iᵢ. Personal inflation over 12 months:", "m_f1": "π<sub>personal</sub> = Σ wᵢ × (Iᵢ,ₜ / Iᵢ,ₜ₋₁₂) − 1", "m_p2": "Basket index for the charts and forecast (base: first month of data = 100):", "m_call": "Weights are spending shares, so they multiply the relative change of each index, not the price level. The formula Σwᵢpᵢ,ₜ / Σwᵢpᵢ,₀ is correct only when wᵢ are quantities of goods.", "m_real": "Real wage growth: (1 + wage growth) / (1 + π) − 1.", "m_data_h": "Data", "data_stat": "Official price indices for the 13 divisions of the national classification (КИПЦ РУ 2018) are loaded: {n} months ({a} – {b}), December 2024 = 100.", "data_file": "Loaded file “{f}”: {n} months ({a} – {b}).", "m_build": "How the series is built. The Agency of Statistics publishes the CPI in monthly press releases; there is no ready series to download. Index levels are computed as follows (December 2024 = 100):", "m_b1": "2026: the “to December 2025” value × the December 2025 level.", "m_b2": "August–December 2025: the “to December 2024” value from those months’ releases.", "m_b3": "January–July 2025 and August–November 2024: the level of the same month a year later ÷ the “to the same month last year” value.", "m_checks": "Checks: the “to previous month” chain matches the “to December” values in every release (within 0.15 pp, due to rounding). August and September 2025 computed two ways differ by at most 0.12 pp. Headline CPI recomputed with the estimated weights differs from the published figure by at most 0.1 pp.", "m_weights": "The Agency does not publish the official basket weights in its releases. They are estimated from each division’s published contribution to CPI growth in January–September 2026: weight = contribution ÷ division price change. Precision is about ±0.5 pp for large divisions.", "m_upload": "You can upload your own CSV in the same format (for example, with new months) and every tab will recalculate. At least 25 consecutive months are needed.", "btn_csv": "Upload CSV", "btn_official": "Restore official data", "btn_copy": "Copy template", "lim_h": "Limitations", "lim1": "Indices come from press releases where they are rounded to 0.1, so monthly changes in the series can differ from the published ones by ±0.1 pp.", "lim2": "In January 2026 “Insurance and financial services” rose by about 41% (motor insurance became more expensive); the division’s weight is small, but it shows on division charts.", "lim3": "The calculation works with categories, not individual goods: within a category, prices change differently for different people.", "lim4": "Spending shares are fixed over the whole period. A person who changes purchases because prices rise faces slightly lower inflation.", "lim5": "The forecast is a statistical extrapolation for 1–3 months, not a promise. The uncertainty range is always shown.", "lim6": "Pass-through coefficients in the scenarios are assumptions that still need to be estimated from data. The “Student”, “Family” and “Pensioner” baskets are examples, not statistics.", "lim7": "By default the explanation is built from a template. The “Explain with AI” button sends Claude only numbers that are already computed and formatted; the page checks that every number in the answer is among them and discards the answer otherwise. The AI gives no financial advice.", "src_h": "Sources", "src_p": "Consumer price index press releases of the Agency of Statistics under the President of the Republic of Uzbekistan:", "src_chip": "Data: Agency of Statistics", "src_file": "Data: {f}", "last_chip": "data to {m}", "csv_loaded": "Loaded: {n} months. Every tab was recalculated from your file.", "csv_readerr": "Could not read the file. Try saving it as CSV in UTF-8 encoding.", "csv_restored": "Official data restored.", "csv_copied": "Header row copied.", "csv_selected": "Template selected; copy it manually.", "e_empty": "The file has no data rows.", "e_first": "The first column must be named month.", "e_missing": "Missing columns: {c}.", "e_month": "Row {r}: the month must be in YYYY-MM format, got “{m}”.", "e_num": "Row {r}, column {c}: a positive number is needed.", "e_gap": "Months must be consecutive with no gaps: {a} is followed by {b}.", "e_min": "At least 25 months are needed; the file has {n}.", "chart_fail": "The chart did not load. The numbers above are calculated without it."}};
+const SOURCES=[["2026-09", "https://stat.uz/img/news/press-reliz-ipts-za-sentyabr-2026-rus_p67192.pdf", ""], ["2026-08", "https://stat.uz/img/news/press-reliz-ipts-za-avgust-2026-rus_p45617.pdf", ""], ["2026-07", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-iyul-2026-rus_p56147.pdf", ""], ["2026-06", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-iyun-2026-rus_p75137.pdf", ""], ["2026-05", "https://stat.uz/img/news/press-reliz-ipts-za-maj-2026-rus_p45107.pdf", ""], ["2026-04", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-aprel-2026-rus_p64552.pdf", ""], ["2026-03", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-mart-2026-rus_p83831.pdf", ""], ["2026-02", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-fevral-2026-rus_p35938.pdf", ""], ["2026-01", "https://stat.uz/img/news/press-reliz-ipts-za-yanvar-2026-rus_p50697.pdf", ""], ["2025-12", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-dekabr-2025-rus_p27127.pdf", ""], ["2025-11", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-noyabr-2025-eng_p62740.pdf", "EN"], ["2025-10", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-oktyabr-2025-rus_p33105.pdf", ""], ["2025-09", "https://stat.uz/img/press-relizlar/press-reliz-ipts-za-sentyabr-2025-eng_p86708.pdf", "EN"], ["2025-08", "https://stat.uz/img/press-reliz-ipts-za-avgust-2025-eng_p68314.pdf", "EN"]];
+function tr(k,vars){let v=(I18N[LANG]&&I18N[LANG][k])??I18N.ru[k]??k;if(vars)for(const n in vars)v=v.split('{'+n+'}').join(vars[n]);return v}
+function applyI18n(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.dataset.i18n)});
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{el.innerHTML=tr(el.dataset.i18nHtml)});
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',tr(el.dataset.i18nAria))});
+  const links=document.getElementById('srcLinks');
+  if(links){links.innerHTML='';SOURCES.forEach(([m,u,tag],i)=>{if(i)links.append(' · ');const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';a.textContent=mlabel(m)+(tag?' ('+tag+')':'');links.append(a)})}
+}
+
 /* ---------- helpers ---------- */
 const $=id=>document.getElementById(id);
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const name=(c,l)=>c[l||'ru'];
 function norm(wp){const s=CATS.reduce((a,c)=>a+(+wp[c.id]||0),0);const w={};CATS.forEach(c=>w[c.id]=s>0?(+wp[c.id]||0)/s:0);return w}
 function wSum(){return Math.round(CATS.reduce((a,c)=>a+(+W[c.id]||0),0)*10)/10}
-function fnum(x,d,l){const s=Math.abs(x).toFixed(d);return (l==='en'?s:s.replace('.',','))}
-function pct(x,d=1,l='ru',sign=false){const v=x*100;return (sign?(v>0.0001?'+':v<-0.0001?'−':''):(v<0?'−':''))+fnum(v,d,l)+'%'}
-function pp(x,d=1,l='ru'){const v=x*100;return (v>0.0001?'+':v<-0.0001?'−':'')+fnum(v,d,l)}
-function sum(n,l='ru'){const r=Math.round(n);const s=Math.abs(r).toLocaleString(l==='en'?'en-US':'ru-RU').replace(/ /g,' ');return (r<0?'−':'')+s+(l==='en'?' UZS':l==='uz'?' so‘m':' сум')}
-function mlabel(m,l='ru'){return MON[l][+m.slice(5)-1]+' '+m.slice(0,4)}
+function fnum(x,d,l){l=l||LANG;const s=Math.abs(x).toFixed(d);return (l==='en'?s:s.replace('.',','))}
+function pct(x,d=1,l=LANG,sign=false){const v=x*100;return (sign?(v>0.0001?'+':v<-0.0001?'−':''):(v<0?'−':''))+fnum(v,d,l)+'%'}
+function pp(x,d=1,l=LANG){const v=x*100;return (v>0.0001?'+':v<-0.0001?'−':'')+fnum(v,d,l)}
+function sum(n,l=LANG){const r=Math.round(n);const s=Math.abs(r).toLocaleString(l==='en'?'en-US':'ru-RU').replace(/ /g,' ');return (r<0?'−':'')+s+(l==='en'?' UZS':l==='uz'?' so‘m':' сум')}
+function mlabel(m,l=LANG){return MON[l][+m.slice(5)-1]+' '+m.slice(0,4)}
 function parseMoney(s){const d=String(s).replace(/[^\d]/g,'');return d?+d:NaN}
 function addMonths(m,k){let y=+m.slice(0,4),mo=+m.slice(5)-1+k;y+=Math.floor(mo/12);mo=((mo%12)+12)%12;return y+'-'+String(mo+1).padStart(2,'0')}
 
@@ -448,9 +467,134 @@ function forecast(w){
 /* ---------- explainer (template, grounded in computed numbers only) ---------- */
 const EX_HEAD={ru:'Объяснение',uz:'Izoh',en:'Explanation'};
 const EX_FOOT={ru:'Текст собран только из чисел на этой странице. Это не прогноз цен и не финансовый совет.',uz:'Matn faqat shu sahifadagi raqamlardan tuzilgan. Bu narx bashorati yoki moliyaviy maslahat emas.',en:'This text uses only the numbers on this page. It is not a price promise or financial advice.'};
-function renderExplain(el,txt){
-  el.innerHTML='<div class="eh"><h3>'+EX_HEAD[LANG]+' · '+LANG.toUpperCase()+'</h3></div><p class="txt"></p><p class="small muted"></p>';
-  el.querySelector('.txt').textContent=txt;el.querySelector('.small').textContent=EX_FOOT[LANG];
+/* ---------- AI explanation layer (claude.ai only, via the `sample` capability) ----------
+   Claude receives ONLY pre-computed, pre-formatted facts. Every number in its answer is checked
+   against those facts; if any number is not among them, the AI text is discarded and the
+   template explanation stays. */
+let SAMPLE=null;
+(async()=>{try{if(window.claude&&typeof window.claude.use==='function'){const s=await window.claude.use('sample');if(s){SAMPLE=s;renderTab();}}}catch(e){}})();
+const AI_CTL={};
+const LANG_NAME={ru:'Russian',uz:'Uzbek (Latin script)',en:'English'};
+const AI_UI={
+  ru:{btn:'Объяснить с ИИ',again:'Объяснить ещё раз',stop:'Стоп',thinking:'Claude думает…',head:'Объяснение ИИ',checking:'Проверяю числа…',ok:'Проверено: все числа в тексте совпадают с расчётом на этой странице.',bad:'Текст ИИ не прошёл проверку: в нём есть число, которого нет в расчётах ({n}). Оставлено объяснение по шаблону.',err:'Не удалось получить объяснение. Попробуйте позже.',limit:'Слишком много запросов. Попробуйте чуть позже.',denied:'Доступ к Claude не разрешён, оставлено объяснение по шаблону.'},
+  uz:{btn:'AI bilan tushuntirish',again:'Qayta tushuntirish',stop:'To‘xtatish',thinking:'Claude o‘ylayapti…',head:'AI izohi',checking:'Raqamlar tekshirilmoqda…',ok:'Tekshirildi: matndagi barcha raqamlar shu sahifadagi hisob-kitobga mos.',bad:'AI matni tekshiruvdan o‘tmadi: unda hisobda yo‘q raqam bor ({n}). Shablon bo‘yicha izoh qoldirildi.',err:'Izoh olinmadi. Keyinroq urinib ko‘ring.',limit:'So‘rovlar juda ko‘p. Birozdan keyin urinib ko‘ring.',denied:'Claude’ga ruxsat berilmagan, shablon bo‘yicha izoh qoldirildi.'},
+  en:{btn:'Explain with AI',again:'Explain again',stop:'Stop',thinking:'Claude is thinking…',head:'AI explanation',checking:'Checking numbers…',ok:'Checked: every number in the text matches the calculation on this page.',bad:'The AI text failed the check: it contains a number that is not in the calculation ({n}). The template explanation is kept.',err:'Could not get an explanation. Try again later.',limit:'Too many requests. Try again a little later.',denied:'Claude access was not allowed; the template explanation is kept.'}
+};
+const NUM_RE=/\d{1,3}(?:[   ]\d{3})+(?:[.,]\d+)?|\d+(?:[.,]\d+)?/g;
+function numsIn(str){return (String(str).match(NUM_RE)||[]).map(t=>Math.abs(parseFloat(t.replace(/[   ]/g,'').replace(',','.')))).filter(x=>isFinite(x))}
+function allowedNums(facts){
+  const set=new Set();
+  (function walk(v){if(v==null)return;if(typeof v==='object'){for(const k in v)walk(v[k]);return}numsIn(v).forEach(x=>set.add(x.toFixed(2)))})(facts);
+  for(let i=0;i<=13;i++)set.add(i.toFixed(2));
+  for(let y=2020;y<=2035;y++)set.add(y.toFixed(2));
+  return set;
+}
+function checkNumbers(text,facts){const ok=allowedNums(facts);return [...new Set(numsIn(text).map(x=>x.toFixed(2)).filter(x=>!ok.has(x)).map(x=>String(+x)))]}
+function buildPrompt(kind,facts,lang){
+  const task={
+    infl:'Explain to this person why their personal 12-month inflation differs from the official figure: name the categories that added most and how their spending shares differ from the official basket.',
+    salary:'Explain to this person what the numbers mean for their salary and purchasing power: did income keep up with prices of their own basket, what the same basket costs now, and what the short-term outlook implies.',
+    sc:'Explain to this person what this one-off price scenario would do to their basket compared with the official basket, and which categories drive the result.'
+  }[kind];
+  return [
+    'You write a short explanation for EconoLens Uzbekistan, a tool that measures personal inflation from official CPI data of the Agency of Statistics of Uzbekistan.',
+    task,
+    'Rules:',
+    '- Write in '+LANG_NAME[lang]+'. 3 to 5 short sentences, plain language a high-school student and their parents understand. No headings, no lists, no markdown.',
+    '- Use ONLY the numbers in FACTS, copied exactly as written there (same rounding, same decimal comma or point). Never calculate new numbers: no sums, differences, ratios, rounding or unit changes. If a number is not in FACTS, describe it in words without a number.',
+    '- Do not invent facts, causes or news that are not in FACTS. You may say which categories matter, not why prices in them changed.',
+    '- One sentence must mention a limitation: the figures are averages for whole categories, and any forecast or scenario is uncertain.',
+    '- No financial advice and no recommendations on what to buy, sell, borrow or invest.',
+    '- Output only the explanation text.',
+    '',
+    'FACTS (JSON):',
+    JSON.stringify(facts,null,1)
+  ].join('\n');
+}
+function renderExplain(el,txt,facts,kind){
+  if(AI_CTL[el.id]){AI_CTL[el.id].abort();delete AI_CTL[el.id];}
+  const ui=AI_UI[LANG];
+  el.innerHTML='<div class="eh"><h3></h3><span class="eh-actions"></span></div><p class="txt"></p><p class="ai-note" hidden></p><p class="small muted foot"></p>';
+  const h=el.querySelector('h3'),p=el.querySelector('.txt'),note=el.querySelector('.ai-note'),acts=el.querySelector('.eh-actions');
+  h.textContent=EX_HEAD[LANG]+' · '+LANG.toUpperCase();p.textContent=txt;el.querySelector('.foot').textContent=EX_FOOT[LANG];
+  if(!SAMPLE||!facts)return;
+  const btn=document.createElement('button');btn.className='btn ai';btn.type='button';btn.textContent=ui.btn;
+  const stop=document.createElement('button');stop.className='btn';stop.type='button';stop.textContent=ui.stop;stop.hidden=true;
+  acts.append(stop,btn);
+  stop.onclick=()=>{AI_CTL[el.id]?.abort()};
+  btn.onclick=async()=>{
+    const ctl=new AbortController();AI_CTL[el.id]=ctl;
+    btn.disabled=true;stop.hidden=false;note.hidden=true;note.className='ai-note';
+    p.classList.add('streaming');p.textContent=ui.thinking;
+    try{
+      const {text}=await SAMPLE(buildPrompt(kind,facts,LANG),{signal:ctl.signal,onText:({text})=>{p.textContent=text}});
+      p.textContent=ui.checking;
+      const bad=checkNumbers(text,facts);
+      if(bad.length){p.textContent=txt;note.textContent=ui.bad.replace('{n}',bad.slice(0,3).join(', '));note.classList.add('bad');}
+      else{p.textContent=text.trim();h.textContent=ui.head+' · '+LANG.toUpperCase();note.textContent=ui.ok;note.classList.add('ok');btn.textContent=ui.again;}
+      note.hidden=false;
+    }catch(e){
+      p.textContent=txt;
+      const code=e&&e.code;
+      if(code==='cancelled'){}
+      else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){SAMPLE=null;btn.remove();note.textContent=ui.denied;note.hidden=false;}
+      else{note.textContent=code==='rate_limited'?ui.limit:ui.err;note.classList.add('bad');note.hidden=false;}
+    }finally{
+      p.classList.remove('streaming');if(btn.isConnected)btn.disabled=false;stop.hidden=true;
+      if(AI_CTL[el.id]===ctl)delete AI_CTL[el.id];
+    }
+  };
+}
+/* facts: every value pre-formatted in the viewer's language; Claude may only copy these numbers */
+function factsInfl(r){
+  const l=LANG,cn=c=>c[l];
+  return {
+    period:mlabel(D.months[T()-12],l)+' – '+mlabel(D.months[T()],l),
+    your_inflation_12m:pct(r.pu,1,l),
+    official_inflation_12m:pct(r.po,1,l),
+    difference_percentage_points:pp(r.pu-r.po,1,l),
+    your_inflation_is:r.pu>=r.po?'higher than official':'lower than official',
+    largest_contributions_to_your_inflation:r.contrib.slice(0,3).map(x=>({category:cn(x.c),contribution_pp:pp(x.v,1,l)})),
+    main_reasons_for_difference:r.gap.slice(0,2).map(x=>({category:cn(x.c),your_share:fnum(x.wu*100,0,l)+'%',official_share:fnum(x.wo*100,0,l)+'%',price_change_12m:pct(x.r,1,l),effect_on_difference_pp:pp(x.v,1,l)})),
+    number_of_categories:'13'
+  };
+}
+function factsSal(s){
+  const l=LANG,f={};
+  if(!(isFinite(s.now)&&s.now>0))return null;
+  f.salary_now_per_month=sum(s.now,l);
+  f.your_inflation_12m=pct(s.pu,1,l);
+  f.official_inflation_12m=pct(s.po,1,l);
+  if(isFinite(s.prev)&&s.prev>0){
+    f.salary_12_months_ago=sum(s.prev,l);
+    f.nominal_salary_growth=pct(s.g,1,l,true);
+    f.real_salary_growth_by_your_inflation=pct(s.real,1,l,true);
+    f.real_salary_growth_by_official_inflation=pct(s.realAvg,1,l,true);
+    f.salary_needed_now_to_buy_the_same_as_a_year_ago=sum(s.need,l);
+    f.salary_now_vs_needed=(s.now>=s.need?'above by ':'below by ')+sum(Math.abs(s.now-s.need),l);
+  }
+  if(isFinite(s.spend)&&s.spend>0){
+    const old=s.spend/(1+s.pu);
+    f.monthly_spending_now=sum(s.spend,l);
+    f.same_purchases_cost_a_year_ago=sum(old,l);
+    f.extra_paid_per_month_for_same_purchases=sum(s.spend-old,l);
+  }
+  f.forecast_basket_price_change_next_3_months=pct(s.fc,1,l,true);
+  f.forecast_95pct_range=pct(Math.max(s.fcLo,-1),1,l,true)+' … '+pct(s.fcHi,1,l,true);
+  f.purchasing_power_loss_in_3_months_if_salary_unchanged=sum(s.now*s.fc/(1+s.fc),l);
+  return f;
+}
+function factsSc(r){
+  const l=LANG,pctIn=id=>fnum(+$(id).value||0,0,l)+'%';
+  const f={
+    shocks:{som_depreciation_vs_usd:pctIn('scFx'),utility_tariffs:pctIn('scUtil'),transport_and_fuel:pctIn('scFuel'),food:pctIn('scFood')},
+    your_basket_change:pct(r.you,1,l,true),
+    official_basket_change:pct(r.avg,1,l,true),
+    largest_category_contributions:r.parts.filter(x=>x.v>0).slice(0,3).map(x=>({category:x.c[l],contribution_pp:pp(x.v,1,l)})),
+    note:'exchange-rate pass-through shares are assumptions, not estimates'
+  };
+  if(r.spend)f.extra_cost_per_month_for_your_spending=sum(r.spend*r.you,l);
+  return f;
 }
 function exInfl(r){
   const l=LANG,hi=r.pu>r.po,d=fnum(Math.abs(r.pu-r.po)*100,1,l);
@@ -467,7 +611,7 @@ function exSal(s){
   let t='';
   if(isFinite(s.prev)&&s.prev>0){
     const ok=s.now>=s.need;
-    if(l==='uz')t=`Maoshingiz 12 oyda ${pct(s.g,1,l)} ga o‘zgardi, shaxsiy inflyatsiyangiz esa ${pct(s.pu,1,l)}. Shuning uchun real maosh ${pct(s.real,1,l,true)} ga o‘zgardi. Bir yil oldingi xaridlarni saqlash uchun ${sum(s.need,l)} kerak; sizning maoshingiz bundan ${sum(Math.abs(s.now-s.need),l)} ga ${ok?'ko‘p':'kam'}.`;
+    if(l==='uz')t=`Maoshingiz 12 oyda ${pct(s.g,1,l)} ga o‘zgardi, shaxsiy inflyatsiyangiz esa ${pct(s.pu,1,l)}. Shuning uchun real maosh ${pct(s.real,1,l,true)} ga o‘zgardi. Bir yil oldingi xaridlarni saqlash uchun ${sum(s.need,l)} kerak; sizning maoshingiz bundan ${sum(Math.abs(s.now-s.need),l)} ${ok?'ko‘p':'kam'}.`;
     else if(l==='en')t=`Your salary changed by ${pct(s.g,1,l)} over 12 months while your personal inflation was ${pct(s.pu,1,l)}, so your real salary changed by ${pct(s.real,1,l,true)}. To buy what you bought a year ago you need ${sum(s.need,l)}; your salary is ${sum(Math.abs(s.now-s.need),l)} ${ok?'above':'below'} that.`;
     else t=`За 12 месяцев зарплата выросла на ${pct(s.g,1,l)}, а ваша личная инфляция составила ${pct(s.pu,1,l)}. Поэтому реальная зарплата изменилась на ${pct(s.real,1,l,true)}. Чтобы покупать столько же, сколько год назад, нужно ${sum(s.need,l)}; ваша зарплата ${ok?'выше':'ниже'} этого уровня на ${sum(Math.abs(s.now-s.need),l)}.`;
   }
@@ -490,9 +634,10 @@ function renderBasketRows(){
   const box=$('basketRows');box.innerHTML='';
   CATS.forEach(c=>{
     const row=document.createElement('div');row.className='brow';
-    row.innerHTML=`<div class="nm">${c.ru}<small>${c.uz} · ${c.en}</small></div>
-      <input type="range" min="0" max="70" step="0.1" id="r-${c.id}" aria-label="${c.ru}, доля">
-      <div class="numin"><input type="number" min="0" max="100" step="0.1" id="n-${c.id}" aria-label="${c.ru}, %"><span class="muted">%</span></div>`;
+    const other=['ru','uz','en'].filter(x=>x!==LANG).map(x=>c[x]).join(' · ');
+    row.innerHTML=`<div class="nm">${c[LANG]}<small>${other}</small></div>
+      <input type="range" min="0" max="70" step="0.1" id="r-${c.id}" aria-label="${tr('share_aria',{c:c[LANG]})}">
+      <div class="numin"><input type="number" min="0" max="100" step="0.1" id="n-${c.id}" aria-label="${c[LANG]}, %"><span class="muted">%</span></div>`;
     box.appendChild(row);
     const r=row.querySelector('input[type=range]'),n=row.querySelector('input[type=number]');
     r.value=W[c.id];n.value=W[c.id];
@@ -503,12 +648,12 @@ function renderBasketRows(){
 function syncRows(){CATS.forEach(c=>{$('r-'+c.id).value=W[c.id];$('n-'+c.id).value=W[c.id]})}
 function renderBasketSummary(){
   const s=wSum(),st=$('sumStatus');
-  const ok=Math.abs(s-100)<0.05;st.textContent='Сумма: '+String(s).replace('.',',')+'%'+(ok?'':' · расчёт нормирует доли');
+  const ok=Math.abs(s-100)<0.05;st.textContent=tr('sum_label',{v:fnum(s,Number.isInteger(s)?0:1)})+(ok?'':tr('sum_norm'));
   st.className='status '+(ok?'ok':'bad');
   const wu=norm(W),wo=norm(PRESETS.official);
-  const fill=(el,w)=>{el.innerHTML='';CATS.forEach(c=>{if(w[c.id]>0){const i=document.createElement('i');i.style.width=(w[c.id]*100)+'%';i.style.background=c.col;i.title=c.ru+': '+Math.round(w[c.id]*100)+'%';el.appendChild(i)}})};
+  const fill=(el,w)=>{el.innerHTML='';CATS.forEach(c=>{if(w[c.id]>0){const i=document.createElement('i');i.style.width=(w[c.id]*100)+'%';i.style.background=c.col;i.title=c[LANG]+': '+Math.round(w[c.id]*100)+'%';el.appendChild(i)}})};
   fill($('stackYou'),wu);fill($('stackAvg'),wo);
-  $('stackLegend').innerHTML=CATS.map(c=>`<span><b style="background:${c.col}"></b>${c.ru}</span>`).join('');
+  $('stackLegend').innerHTML=CATS.map(c=>`<span><b style="background:${c.col}"></b>${c[LANG]}</span>`).join('');
 }
 function onWeights(){save('weights13',W);renderBasketSummary();if(TAB!=='basket')renderTab()}
 
@@ -524,22 +669,22 @@ function barsHTML(items,signed){
   return items.map(x=>{
     const w=Math.abs(x.v)/max*(signed?50:100);
     const left=signed?(x.v>=0?50:50-w):0;
-    return `<div class="bar"><span>${x.c.ru}</span><span class="track">${signed?'<span class="zero" style="left:50%"></span>':''}<i class="${x.v<0?'neg':''}" style="left:${left}%;width:${w}%"></i></span><span class="v">${pp(x.v,1)}</span></div>`;
+    return `<div class="bar"><span>${x.c[LANG]}</span><span class="track">${signed?'<span class="zero" style="left:50%"></span>':''}<i class="${x.v<0?'neg':''}" style="left:${left}%;width:${w}%"></i></span><span class="v">${pp(x.v,1)}</span></div>`;
   }).join('');
 }
 function renderInfl(){
   const r=infCalc();
   $('k-you').textContent=pct(r.pu);$('k-avg').textContent=pct(r.po);
-  const g=$('k-gap');g.textContent=pp(r.pu-r.po)+' п.п.';g.className='val '+(r.pu>r.po?'up':'down');
+  const g=$('k-gap');g.textContent=pp(r.pu-r.po)+' '+tr('pp_unit');g.className='val '+(r.pu>r.po?'up':'down');
   $('k-you-n').textContent=mlabel(D.months[r.t-12])+' – '+mlabel(D.months[r.t]);
   $('contribBars').innerHTML=barsHTML(r.contrib,r.contrib.some(x=>x.v<0));
   $('gapBars').innerHTML=barsHTML(r.gap,true);
-  renderExplain($('ex-infl'),exInfl(r));
+  renderExplain($('ex-infl'),exInfl(r),factsInfl(r),'infl');
   const labels=[],a=[],b=[];
   for(let t=12;t<=r.t;t++){labels.push(mlabel(D.months[t]));a.push(+(yoy(r.wu,t)*100).toFixed(2));b.push(+(yoy(r.wo,t)*100).toFixed(2))}
   drawLine('chYoy',labels,[
-    {label:'Ваша корзина',data:a,borderColor:css('--accent'),backgroundColor:css('--accent'),borderWidth:2.5,pointRadius:0,tension:.25},
-    {label:'Официальная корзина',data:b,borderColor:css('--saffron'),backgroundColor:css('--saffron'),borderWidth:2,borderDash:[5,4],pointRadius:0,tension:.25}
+    {label:tr('your_basket'),data:a,borderColor:css('--accent'),backgroundColor:css('--accent'),borderWidth:2.5,pointRadius:0,tension:.25},
+    {label:tr('official_basket'),data:b,borderColor:css('--saffron'),backgroundColor:css('--saffron'),borderWidth:2,borderDash:[5,4],pointRadius:0,tension:.25}
   ],v=>v.toFixed(0)+'%');
 }
 
@@ -554,54 +699,54 @@ function renderSalary(){
   const s=salCalc();const hasPrev=isFinite(s.prev)&&s.prev>0,hasNow=isFinite(s.now)&&s.now>0;
   const setK=(id,v,cls)=>{const e=$(id);e.textContent=v;e.className='val'+(cls?' '+cls:'')};
   if(hasPrev&&hasNow){
-    setK('s-nom',pct(s.g,1,'ru',true));
-    setK('s-real',pct(s.real,1,'ru',true),s.real>=0?'down':'up');
-    setK('s-real-avg',pct(s.realAvg,1,'ru',true));
+    setK('s-nom',pct(s.g,1,LANG,true));
+    setK('s-real',pct(s.real,1,LANG,true),s.real>=0?'down':'up');
+    setK('s-real-avg',pct(s.realAvg,1,LANG,true));
   }else{['s-nom','s-real','s-real-avg'].forEach(id=>setK(id,'—'))}
   const cmp=$('salCompare');
   if(hasPrev&&hasNow){
     const rows=[
-      {l:'Зарплата год назад',v:s.prev,col:css('--line')},
-      {l:'Нужно сейчас по вашей инфляции',v:s.need,col:css('--accent')},
-      {l:'Нужно сейчас по официальной инфляции',v:s.needAvg,col:css('--saffron')},
-      {l:'Ваша зарплата сейчас',v:s.now,col:s.now>=s.need?css('--good'):css('--bad')}
+      {l:tr('c_prev'),v:s.prev,col:css('--line')},
+      {l:tr('c_need'),v:s.need,col:css('--accent')},
+      {l:tr('c_need_avg'),v:s.needAvg,col:css('--saffron')},
+      {l:tr('c_now'),v:s.now,col:s.now>=s.need?css('--good'):css('--bad')}
     ];
     const max=Math.max(...rows.map(x=>x.v));
     cmp.innerHTML=rows.map(x=>`<div class="cmp"><span>${x.l}</span><span class="track"><i style="width:${x.v/max*100}%;background:${x.col}"></i></span><span class="v">${sum(x.v)}</span></div>`).join('');
     const d=s.now-s.need;
-    $('salNeedNote').textContent=d>=0?`Зарплата покрывает рост цен вашей корзины с запасом ${sum(d)} в месяц.`:`До уровня прошлого года не хватает ${sum(-d)} в месяц.`;
-  }else{cmp.innerHTML='<p class="muted small">Введите зарплату сейчас и год назад.</p>';$('salNeedNote').textContent=''}
+    $('salNeedNote').textContent=d>=0?tr('need_ok',{v:sum(d)}):tr('need_bad',{v:sum(-d)});
+  }else{cmp.innerHTML='<p class="muted small">'+tr('enter_both')+'</p>';$('salNeedNote').textContent=''}
   const li=[];
   if(isFinite(s.spend)&&s.spend>0){
     const old=s.spend/(1+s.pu);
-    li.push(`Те же покупки год назад стоили около <b class="mono">${sum(old)}</b>. Сейчас вы платите за них на <b class="mono">${sum(s.spend-old)}</b> в месяц больше, это около <b class="mono">${sum((s.spend-old)*12)}</b> в год.`);
-    if(hasNow)li.push(`Расходы составляют <b class="mono">${pct(s.spend/s.now,0)}</b> зарплаты; остаётся <b class="mono">${sum(s.now-s.spend)}</b>.`);
-  }else li.push('Укажите месячные расходы, чтобы увидеть, сколько вы доплачиваете за ту же корзину.');
+    li.push(tr('li_old',{old:sum(old),extra:sum(s.spend-old),year:sum((s.spend-old)*12)}));
+    if(hasNow)li.push(tr('li_share',{p:pct(s.spend/s.now,0),rest:sum(s.now-s.spend)}));
+  }else li.push(tr('li_nospend'));
   if(hasNow){
-    li.push(`Если зарплата не изменится, через 3 месяца её покупательная способность может снизиться примерно на <b class="mono">${pct(s.fc)}</b> (диапазон ${pct(Math.max(s.fcLo,-1))} … ${pct(s.fcHi)}), то есть на <b class="mono">${sum(s.now*s.fc/(1+s.fc))}</b> в ценах сегодняшнего дня.`);
+    li.push(tr('li_fc',{p:pct(s.fc),lo:pct(Math.max(s.fcLo,-1)),hi:pct(s.fcHi),v:sum(s.now*s.fc/(1+s.fc))}));
   }
   $('salList').innerHTML=li.map(x=>'<li>'+x+'</li>').join('');
-  renderExplain($('ex-sal'),exSal(s));
+  renderExplain($('ex-sal'),exSal(s),factsSal(s),'salary');
 }
 
 function renderFc(){
   const wu=norm(W),f=forecast(wu);
-  $('f-3m').textContent=pct(f.fut[2].cum,1,'ru',true);
-  $('f-3m-n').textContent='рост индекса корзины к '+mlabel(addMonths(D.months[T()],3))+'; 95%: '+pct(f.fut[2].loCum,1,'ru',true)+' … '+pct(f.fut[2].hiCum,1,'ru',true);
-  $('f-best').textContent=f.best.ru;
-  $('f-best-n').textContent=f.best.id==='naive'?'простой метод оказался лучшим':'лучше наивного на '+fnum((1-f.best.mae/f.naiveMae)*100,0)+'% по MAE';
+  $('f-3m').textContent=pct(f.fut[2].cum,1,LANG,true);
+  $('f-3m-n').textContent=tr('f_3m_n',{m:mlabel(addMonths(D.months[T()],3)),lo:pct(f.fut[2].loCum,1,LANG,true),hi:pct(f.fut[2].hiCum,1,LANG,true)});
+  $('f-best').textContent=tr('m_'+f.best.id);
+  $('f-best-n').textContent=f.best.id==='naive'?tr('f_best_naive'):tr('f_best_better',{p:fnum((1-f.best.mae/f.naiveMae)*100,0)});
   $('f-mae').textContent=fnum(f.best.mae*100,2);
-  $('fcTable').innerHTML=f.methods.map(m=>`<tr class="${m===f.best?'best':''}"><td>${m.ru}</td><td>${m.how}</td><td class="n">${fnum(m.mae*100,2)}</td><td class="n">${fnum(m.rmse*100,2)}</td></tr>`).join('');
+  $('fcTable').innerHTML=f.methods.map(m=>`<tr class="${m===f.best?'best':''}"><td>${tr('m_'+m.id)}</td><td>${tr('h_'+m.id)}</td><td class="n">${fnum(m.mae*100,2)}</td><td class="n">${fnum(m.rmse*100,2)}</td></tr>`).join('');
   const start=Math.max(0,f.L.length-24),labels=[],hist=[],fc=[],lo=[],hi=[];
   for(let t=start;t<f.L.length;t++){labels.push(mlabel(D.months[t]));hist.push(+f.L[t].toFixed(2));fc.push(null);lo.push(null);hi.push(null)}
   const last=f.L.length-1-start;fc[last]=hist[last];lo[last]=hist[last];hi[last]=hist[last];
   f.fut.forEach((p,h)=>{labels.push(mlabel(addMonths(D.months[T()],h+1)));hist.push(null);fc.push(+p.lv.toFixed(2));lo.push(+p.lo.toFixed(2));hi.push(+p.hi.toFixed(2))});
   const acc=css('--accent');
   drawLine('chFc',labels,[
-    {label:'Верхняя граница',data:hi,borderColor:'transparent',backgroundColor:hexA(acc,.18),pointRadius:0,fill:'+1',spanGaps:false},
-    {label:'Нижняя граница',data:lo,borderColor:'transparent',backgroundColor:hexA(acc,.18),pointRadius:0,fill:false},
-    {label:'Индекс корзины',data:hist,borderColor:acc,backgroundColor:acc,borderWidth:2.5,pointRadius:0,tension:.2},
-    {label:'Прогноз',data:fc,borderColor:css('--saffron'),backgroundColor:css('--saffron'),borderWidth:2.5,borderDash:[5,4],pointRadius:3,tension:.2}
+    {label:'95%',band:true,data:hi,borderColor:'transparent',backgroundColor:hexA(acc,.18),pointRadius:0,fill:'+1',spanGaps:false},
+    {label:'95%',band:true,data:lo,borderColor:'transparent',backgroundColor:hexA(acc,.18),pointRadius:0,fill:false},
+    {label:tr('ser_index'),data:hist,borderColor:acc,backgroundColor:acc,borderWidth:2.5,pointRadius:0,tension:.2},
+    {label:tr('ser_fc'),data:fc,borderColor:css('--saffron'),backgroundColor:css('--saffron'),borderWidth:2.5,borderDash:[5,4],pointRadius:3,tension:.2}
   ],v=>v.toFixed(0),true);
 }
 
@@ -616,34 +761,34 @@ function scCalc(){
 }
 function renderSc(){
   const r=scCalc();
-  $('sc-you').textContent=pct(r.you,1,'ru',true);$('sc-avg').textContent=pct(r.avg,1,'ru',true);
-  $('sc-you-n').textContent=r.spend?'≈ '+sum(r.spend*r.you)+' в месяц к вашим расходам':'разовый рост стоимости корзины';
+  $('sc-you').textContent=pct(r.you,1,LANG,true);$('sc-avg').textContent=pct(r.avg,1,LANG,true);
+  $('sc-you-n').textContent=r.spend?tr('sc_you_spend',{v:sum(r.spend*r.you)}):tr('sc_you_once');
   $('scBars').innerHTML=barsHTML(r.parts,false);
-  renderExplain($('ex-sc'),exSc(r));
+  renderExplain($('ex-sc'),exSc(r),r.you>1e-9?factsSc(r):null,'sc');
 }
 function renderPassTable(){
-  $('passTable').innerHTML=CATS.map(c=>`<tr><td>${c.ru}</td><td class="n"><input type="number" id="pass-${c.id}" min="0" max="1" step="0.05" value="${PASS[c.id]}" style="width:80px" aria-label="Перенос курса: ${c.ru}"></td></tr>`).join('');
+  $('passTable').innerHTML=CATS.map(c=>`<tr><td>${c[LANG]}</td><td class="n"><input type="number" id="pass-${c.id}" min="0" max="1" step="0.05" value="${PASS[c.id]}" style="width:80px" aria-label="${tr('pass_aria',{c:c[LANG]})}"></td></tr>`).join('');
   CATS.forEach(c=>$('pass-'+c.id).addEventListener('input',e=>{const v=Math.max(0,Math.min(1,+e.target.value||0));PASS[c.id]=v;save('pass13',PASS);renderSc()}));
 }
 
 function renderMeta(){
-  const chip=$('srcChip');chip.textContent=D.source==='stat'?'Данные: Агентство статистики':'Данные: '+D.name;chip.className='chip';
-  $('lastChip').textContent='данные по '+mlabel(D.months[T()]);
+  const chip=$('srcChip');chip.textContent=D.source==='stat'?tr('src_chip'):tr('src_file',{f:D.name});chip.className='chip';
+  $('lastChip').textContent=tr('last_chip',{m:mlabel(D.months[T()])});
   $('dataNote').textContent=D.source==='stat'
-    ?`Загружены официальные индексы цен по 13 разделам классификации КИПЦ РУ 2018: ${D.months.length} месяцев (${mlabel(D.months[0])} – ${mlabel(D.months[T()])}), декабрь 2024 = 100.`
-    :`Загружен файл «${D.name}»: ${D.months.length} месяцев (${mlabel(D.months[0])} – ${mlabel(D.months[T()])}).`;
+    ?tr('data_stat',{n:D.months.length,a:mlabel(D.months[0]),b:mlabel(D.months[T()])})
+    :tr('data_file',{f:D.name,n:D.months.length,a:mlabel(D.months[0]),b:mlabel(D.months[T()])});
 }
 
 /* ---------- charts ---------- */
 function hexA(c,a){const m=c.match(/^#([0-9a-f]{6})$/i);if(!m)return c;const n=parseInt(m[1],16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
 function drawLine(id,labels,datasets,fmt,hideBandLegend){
-  if(typeof Chart==='undefined'){const cv=$(id);cv.parentElement.innerHTML='<p class="muted small">График не загрузился. Числа выше рассчитаны и без него.</p>';return}
+  if(typeof Chart==='undefined'){const cv=$(id);if(cv)cv.parentElement.innerHTML='<p class="muted small">'+tr('chart_fail')+'</p>';return}
   if(charts[id])charts[id].destroy();
   const ink=css('--muted'),grid=css('--line');
   charts[id]=new Chart($(id),{type:'line',data:{labels,datasets},options:{
     responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},
-    plugins:{legend:{labels:{color:ink,boxWidth:12,font:{family:'Golos Text'},filter:i=>!hideBandLegend||!/граница/.test(i.text)}},
-      tooltip:{filter:i=>i.raw!==null&&!/граница/.test(i.dataset.label),callbacks:{label:i=>i.dataset.label+': '+String(i.raw.toFixed(id==='chYoy'?1:2)).replace('.',',')+(id==='chYoy'?'%':'')}}},
+    plugins:{legend:{labels:{color:ink,boxWidth:12,font:{family:'Golos Text'},filter:(i,data)=>!(data.datasets[i.datasetIndex]||{}).band}},
+      tooltip:{filter:i=>i.raw!==null&&!i.dataset.band,callbacks:{label:i=>i.dataset.label+': '+String(i.raw.toFixed(id==='chYoy'?1:2)).replace('.',LANG==='en'?'.':',')+(id==='chYoy'?'%':'')}}},
     scales:{x:{ticks:{color:ink,maxRotation:0,autoSkipPadding:14,font:{family:'Golos Text'}},grid:{display:false}},
       y:{ticks:{color:ink,callback:fmt,font:{family:'JetBrains Mono'}},grid:{color:grid}}}
   }});
@@ -664,26 +809,26 @@ function setTab(t){
   document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);
   renderTab();
 }
-function setLang(l){LANG=l;save('lang',l);document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===l)));renderTab()}
+function setLang(l){LANG=l;save('lang',l);document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===l)));applyI18n();renderBasketRows();renderPassTable();renderMeta();renderBasketSummary();renderTab()}
 
 /* ---------- CSV ---------- */
 function parseCSV(text){
   const lines=text.replace(/\r/g,'').split('\n').map(s=>s.trim()).filter(Boolean);
-  if(lines.length<2)throw new Error('В файле нет строк с данными.');
+  if(lines.length<2)throw new Error(tr('e_empty'));
   const sep=lines[0].includes(';')?';':',';
   const head=lines[0].split(sep).map(s=>s.trim().toLowerCase());
-  if(head[0]!=='month')throw new Error('Первый столбец должен называться month.');
+  if(head[0]!=='month')throw new Error(tr('e_first'));
   const miss=CATS.filter(c=>!head.includes(c.id)).map(c=>c.id);
-  if(miss.length)throw new Error('Не хватает столбцов: '+miss.join(', ')+'.');
+  if(miss.length)throw new Error(tr('e_missing',{c:miss.join(', ')}));
   const months=[],idx=Object.fromEntries(CATS.map(c=>[c.id,[]]));
   lines.slice(1).forEach((ln,i)=>{
     const cells=ln.split(sep).map(s=>s.trim());
-    const m=cells[0];if(!/^\d{4}-\d{2}$/.test(m))throw new Error(`Строка ${i+2}: месяц должен быть в формате ГГГГ-ММ, сейчас «${m}».`);
+    const m=cells[0];if(!/^\d{4}-\d{2}$/.test(m))throw new Error(tr('e_month',{r:i+2,m}));
     months.push(m);
-    CATS.forEach(c=>{const v=parseFloat((cells[head.indexOf(c.id)]||'').replace(',','.'));if(!(v>0))throw new Error(`Строка ${i+2}, столбец ${c.id}: нужно положительное число.`);idx[c.id].push(v)});
+    CATS.forEach(c=>{const v=parseFloat((cells[head.indexOf(c.id)]||'').replace(',','.'));if(!(v>0))throw new Error(tr('e_num',{r:i+2,c:c.id}));idx[c.id].push(v)});
   });
-  for(let k=1;k<months.length;k++)if(months[k]!==addMonths(months[k-1],1))throw new Error(`Месяцы должны идти подряд без пропусков: после ${months[k-1]} идёт ${months[k]}.`);
-  if(months.length<25)throw new Error(`Нужно минимум 25 месяцев, в файле ${months.length}.`);
+  for(let k=1;k<months.length;k++)if(months[k]!==addMonths(months[k-1],1))throw new Error(tr('e_gap',{a:months[k-1],b:months[k]}));
+  if(months.length<25)throw new Error(tr('e_min',{n:months.length}));
   return {months,idx};
 }
 
@@ -708,14 +853,14 @@ renderPassTable();
 $('csvFile').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;const msg=$('csvMsg');
   const rd=new FileReader();
-  rd.onload=()=>{try{const p=parseCSV(String(rd.result));D={...p,source:'file',name:f.name};msg.className='okmsg';msg.textContent=`Загружено: ${p.months.length} месяцев. Все вкладки пересчитаны по вашему файлу.`;renderMeta()}catch(err){msg.className='err';msg.textContent=err.message}e.target.value=''};
-  rd.onerror=()=>{msg.className='err';msg.textContent='Не удалось прочитать файл. Попробуйте сохранить его как CSV в кодировке UTF-8.'};
+  rd.onload=()=>{try{const p=parseCSV(String(rd.result));D={...p,source:'file',name:f.name};msg.className='okmsg';msg.textContent=tr('csv_loaded',{n:p.months.length});renderMeta()}catch(err){msg.className='err';msg.textContent=err.message}e.target.value=''};
+  rd.onerror=()=>{msg.className='err';msg.textContent=tr('csv_readerr')};
   rd.readAsText(f);
 });
-$('demoBtn').addEventListener('click',()=>{D=officialData();const m=$('csvMsg');m.className='okmsg';m.textContent='Возвращены официальные данные.';renderMeta()});
+$('demoBtn').addEventListener('click',()=>{D=officialData();const m=$('csvMsg');m.className='okmsg';m.textContent=tr('csv_restored');renderMeta()});
 $('copyTpl').addEventListener('click',()=>{
   const txt='month,'+CATS.map(c=>c.id).join(',');const m=$('csvMsg');
-  navigator.clipboard.writeText(txt).then(()=>{m.className='okmsg';m.textContent='Строка заголовков скопирована.'}).catch(()=>{const r=document.createRange();r.selectNodeContents($('csvTpl'));const s=getSelection();s.removeAllRanges();s.addRange(r);m.className='muted small';m.textContent='Шаблон выделен, скопируйте его вручную.'});
+  navigator.clipboard.writeText(txt).then(()=>{m.className='okmsg';m.textContent=tr('csv_copied')}).catch(()=>{const r=document.createRange();r.selectNodeContents($('csvTpl'));const s=getSelection();s.removeAllRanges();s.addRange(r);m.className='muted small';m.textContent=tr('csv_selected')});
 });
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderTab)}catch(e){}
 new MutationObserver(renderTab).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
