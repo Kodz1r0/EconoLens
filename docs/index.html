@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="EconoLens Uzbekistan: personal inflation and purchasing power calculator based on official CPI data.">
 <style>:root{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="config.js"></script>
 <title>EconoLens Uzbekistan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,6 +475,16 @@ const EX_FOOT={ru:'Текст собран только из чисел на э�
 let SAMPLE=null;
 (async()=>{try{if(window.claude&&typeof window.claude.use==='function'){const s=await window.claude.use('sample');if(s){SAMPLE=s;renderTab();}}}catch(e){}})();
 const AI_CTL={};
+/* public site: explanation proxy URL from config.js (empty = feature off) */
+const AI_ENDPOINT=String((typeof window!=='undefined'&&window.ECONOLENS_AI_ENDPOINT)||'').trim();
+async function askAI(kind,facts,lang,signal,onText){
+  if(SAMPLE){const {text}=await SAMPLE(buildPrompt(kind,facts,lang),{signal,onText});return text}
+  let r;try{r=await fetch(AI_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,lang,facts}),signal})}
+  catch(e){throw {code:e&&e.name==='AbortError'?'cancelled':'upstream_error'}}
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.text)throw {code:r.status===429?'rate_limited':'upstream_error'};
+  return j.text;
+}
 const LANG_NAME={ru:'Russian',uz:'Uzbek (Latin script)',en:'English'};
 const AI_UI={
   ru:{btn:'Объяснить с ИИ',again:'Объяснить ещё раз',stop:'Стоп',thinking:'Claude думает…',head:'Объяснение ИИ',checking:'Проверяю числа…',ok:'Проверено: все числа в тексте совпадают с расчётом на этой странице.',bad:'Текст ИИ не прошёл проверку: в нём есть число, которого нет в расчётах ({n}). Оставлено объяснение по шаблону.',err:'Не удалось получить объяснение. Попробуйте позже.',limit:'Слишком много запросов. Попробуйте чуть позже.',denied:'Доступ к Claude не разрешён, оставлено объяснение по шаблону.'},
@@ -517,7 +528,7 @@ function renderExplain(el,txt,facts,kind){
   el.innerHTML='<div class="eh"><h3></h3><span class="eh-actions"></span></div><p class="txt"></p><p class="ai-note" hidden></p><p class="small muted foot"></p>';
   const h=el.querySelector('h3'),p=el.querySelector('.txt'),note=el.querySelector('.ai-note'),acts=el.querySelector('.eh-actions');
   h.textContent=EX_HEAD[LANG]+' · '+LANG.toUpperCase();p.textContent=txt;el.querySelector('.foot').textContent=EX_FOOT[LANG];
-  if(!SAMPLE||!facts)return;
+  if((!SAMPLE&&!AI_ENDPOINT)||!facts)return;
   const btn=document.createElement('button');btn.className='btn ai';btn.type='button';btn.textContent=ui.btn;
   const stop=document.createElement('button');stop.className='btn';stop.type='button';stop.textContent=ui.stop;stop.hidden=true;
   acts.append(stop,btn);
@@ -527,7 +538,7 @@ function renderExplain(el,txt,facts,kind){
     btn.disabled=true;stop.hidden=false;note.hidden=true;note.className='ai-note';
     p.classList.add('streaming');p.textContent=ui.thinking;
     try{
-      const {text}=await SAMPLE(buildPrompt(kind,facts,LANG),{signal:ctl.signal,onText:({text})=>{p.textContent=text}});
+      const text=await askAI(kind,facts,LANG,ctl.signal,({text})=>{p.textContent=text});
       p.textContent=ui.checking;
       const bad=checkNumbers(text,facts);
       if(bad.length){p.textContent=txt;note.textContent=ui.bad.replace('{n}',bad.slice(0,3).join(', '));note.classList.add('bad');}
@@ -601,6 +612,11 @@ function exInfl(r){
   const c1=r.contrib[0],c2=r.contrib[1],g=r.gap[0];
   const more=g.wu>g.wo;const wu=fnum(g.wu*100,0,l),wo=fnum(g.wo*100,0,l);
   const per=mlabel(D.months[T()-12],l)+' – '+mlabel(D.months[T()],l);
+  if(Math.abs(r.pu-r.po)<0.0005){
+    if(l==='uz')return `So‘nggi 12 oyda (${per}) savatingiz ${pct(r.pu,1,l)} ga qimmatladi — rasmiy savat bilan deyarli bir xil, chunki ulushlaringiz rasmiy savatga yaqin. Eng katta hissa «${c1.c.uz}» (${pp(c1.v,1,l)} f.p.) va «${c2.c.uz}» (${pp(c2.v,1,l)} f.p.) toifalaridan. O‘z ulushlaringizni «Savat» bo‘limida kiriting — shunda farq ko‘rinadi.`;
+    if(l==='en')return `Over the last 12 months (${per}) your basket became ${pct(r.pu,1,l)} more expensive — practically the same as the official basket, because your shares are close to it. The biggest contributions came from ${c1.c.en} (${pp(c1.v,1,l)} pp) and ${c2.c.en} (${pp(c2.v,1,l)} pp). Enter your own shares on the Basket tab to see how your inflation differs.`;
+    return `За последние 12 месяцев (${per}) ваша корзина подорожала на ${pct(r.pu,1,l)} — практически как официальная, потому что ваши доли близки к официальной корзине. Больше всего добавили «${c1.c.ru}» (${pp(c1.v,1,l)} п.п.) и «${c2.c.ru}» (${pp(c2.v,1,l)} п.п.). Введите свои доли на вкладке «Корзина», чтобы увидеть, чем ваша инфляция отличается.`;
+  }
   if(l==='uz')return `So‘nggi 12 oyda (${per}) savatingiz narxi ${pct(r.pu,1,l)} ga oshdi. Rasmiy savat ${pct(r.po,1,l)} ga qimmatladi, ya’ni shaxsiy inflyatsiyangiz ${d} foiz punkti ${hi?'yuqori':'past'}. Eng katta hissa «${c1.c.uz}» toifasiga to‘g‘ri keladi (${pp(c1.v,1,l)} f.p.), keyin «${c2.c.uz}» (${pp(c2.v,1,l)} f.p.). Farqning asosiy sababi — «${g.c.uz}» ulushi sizda ${more?'ko‘proq':'kamroq'}: ${wu}% va rasmiy ${wo}%, bu toifada narxlar ${pct(g.r,1,l)} ga o‘zgargan.`;
   if(l==='en')return `Over the last 12 months (${per}) your basket became ${pct(r.pu,1,l)} more expensive. The official basket rose ${pct(r.po,1,l)}, so your personal inflation is ${d} percentage points ${hi?'higher':'lower'}. The biggest contribution came from ${c1.c.en} (${pp(c1.v,1,l)} pp), followed by ${c2.c.en} (${pp(c2.v,1,l)} pp). The gap is mainly explained by your ${more?'larger':'smaller'} share of ${g.c.en}: ${wu}% versus ${wo}% in the official basket, in a category where prices changed by ${pct(g.r,1,l)}.`;
   return `За последние 12 месяцев (${per}) ваша корзина подорожала на ${pct(r.pu,1,l)}. Официальная корзина подорожала на ${pct(r.po,1,l)}, то есть ваша личная инфляция на ${d} п.п. ${hi?'выше':'ниже'}. Больше всего к росту добавила категория «${c1.c.ru}» (${pp(c1.v,1,l)} п.п.), затем «${c2.c.ru}» (${pp(c2.v,1,l)} п.п.). Разница с официальной корзиной в основном объясняется тем, что у вас ${more?'больше':'меньше'} доля категории «${g.c.ru}»: ${wu}% против ${wo}% в официальной корзине, а цены в ней изменились на ${pct(g.r,1,l)}.`;
