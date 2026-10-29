@@ -112,7 +112,8 @@ export default {
         },
         body: JSON.stringify({
           model: env.MODEL || DEFAULT_MODEL,
-          max_tokens: 500,
+          max_tokens: 2000,                     // thinking tokens count toward this limit
+          output_config: { effort: "low" },     // short task: keep adaptive thinking light
           messages: [{ role: "user", content: buildPrompt(kind, facts, lang) }],
         }),
       });
