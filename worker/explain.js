@@ -8,7 +8,7 @@
  *
  * Settings (Cloudflare dashboard → Worker → Settings → Variables and Secrets):
  *   ANTHROPIC_API_KEY  (Secret)  your Claude API key — never put it in code
- *   ALLOWED_ORIGINS    (Text)    comma-separated, e.g. https://kodz1r0.github.io
+ *   ALLOWED_ORIGINS    (Text)    comma-separated, e.g. https://abdijaliev.github.io
  *   MODEL              (Text)    optional, default claude-haiku-5-5
  */
 

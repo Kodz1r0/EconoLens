@@ -15,7 +15,7 @@ text appears in those facts and falls back to the template otherwise.
    Deploy. Then Edit code, replace everything with the contents of `explain.js`, Deploy.
 4. **Settings → Variables and Secrets:**
    - `ANTHROPIC_API_KEY` — type **Secret**, value = your key
-   - `ALLOWED_ORIGINS` — type Text, value = `https://kodz1r0.github.io`
+   - `ALLOWED_ORIGINS` — type Text, value = `https://abdijaliev.github.io`
    - `MODEL` — optional, Text, default `claude-haiku-5-5`
 5. Copy the worker URL (like `https://econolens-explain.<name>.workers.dev`) and put it in
    `docs/config.js`:
